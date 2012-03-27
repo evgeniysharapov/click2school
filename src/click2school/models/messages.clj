@@ -7,7 +7,8 @@
   (ref
    [{:id 1 :subject "Organizing meeting 1" :from "Jacob Thornton" :to "Evgeniy Sharapov" :sent "01/01/2012" :text "Dear Mr. Sharapov"}
     {:id 2 :subject "Organizing meeting 2" :from "Jacob Thornton" :to "Evgeniy Sharapov" :sent "01/01/2012" :text "Dear Mr. Sharapov"}
-    {:id 3 :subject "Organizing meeting 3" :from "Jacob Thornton" :to "Evgeniy Sharapov" :sent "01/01/2012" :text "Dear Mr. Sharapov"}]))
+    {:id 3 :subject "Organizing meeting 3" :from "Jacob Thornton" :to "Evgeniy Sharapov" :sent "01/01/2012" :text "Dear Mr. Sharapov"}
+    {:id 4 :subject "Organizing meeting 3" :from "Jacob Thornton" :to "Chittu Desai" :sent "01/01/2012" :text "Dear Mr. Sharapov"}]))
 
 
 (defn fetch-list []
