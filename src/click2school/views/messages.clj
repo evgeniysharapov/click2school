@@ -109,7 +109,7 @@
     [:div {:class "control-group"}
      [:label {:for "message-subject", :class "control-label"} "Subject"]
      [:div {:class "controls"}
-      [:input {:type "text", :class "input-xlarge focused", :id "message-subject", :name "subject", :value "Subject of the Message"}]]]
+      [:input {:type "text", :class "input-xlarge focused", :id "message-subject", :name "subject", :placeholder "Subject of the Message"}]]]
     [:div {:class "control-group"}
      [:label {:for "message-body", :class "control-label"} ""]
      [:div {:class "controls"}
