@@ -1,7 +1,8 @@
 (ns click2school.views.common
-  (:require [click2school.utils :as utils])
+  (:require [click2school.utils :as utils]
+            [noir.session :as session])
   (:use [noir.core :only [defpartial]]
- 		[click2school.models.user :as user]
+        [click2school.models.user :as user]
         [hiccup.page-helpers]
         [clojure.string :only (join)]))
 
