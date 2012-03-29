@@ -68,7 +68,18 @@
 (defn fullname [u]
   (str (:first-name u) " " (:last-name u)))
 
-(defn create [])
+(defn- mk-user-id []
+  (rand-int 1000000))
+
+(defn create [user]
+  (dosync
+   (alter *data* conj (merge {:id (mk-user-id) } user))))
+
+(defn update [user]
+  (let [other-users (filter #(not= (:id %) (:id user)) @*data*)
+        updated-user (merge (find-by-id (:id user)) user)]
+    (dosync
+     (ref-set *data* (conj other-users updated-user)))))
 
 (defn delete [])
 
