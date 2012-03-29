@@ -1,7 +1,10 @@
 (ns click2school.utils
   (:require [pl.danieljanus.tagsoup :as tagsoup]
             [compojure.route :as route]
-            [noir.session :as session]))
+            [noir.session :as session]
+            [clj-time.core :as ctime]
+            [clj-time.coerce :as tcoerce]
+            [clj-time.format :as tform]))
 
 (defn substring? [s search]
   "Returns true if SEARCH is a substring of S"
