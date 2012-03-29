@@ -1,6 +1,7 @@
 (ns click2school.views.common
   (:require [click2school.utils :as utils])
   (:use [noir.core :only [defpartial]]
+ 		[click2school.models.user :as user]
         [hiccup.page-helpers]
         [clojure.string :only (join)]))
 
@@ -149,6 +150,11 @@
    :zoom-in "icon-zoom-in",
    :zoom-out "icon-zoom-out"})
 
+(defn me []
+"Returns user from the session"
+  (user/find-by-id
+   (session/get :user-id)))
+
 (defn navbar-item [url title & rest ]
   (let [params (filter #(keyword?  %) rest)
         params1 (map #(name %) params)
@@ -246,7 +252,7 @@
   (show-alert-error "Papers are due "  [:b {} "Tomorrow"] ))
 
 (defn sidebar-content-with-alerts [sidebar alerts & content]
-  (let [user (utils/me)
+  (let [user (me)
         user-title (if (= "Male" (:gender user)) "Mr." "Mrs.")
         user-fullname (str (:first-name user) " " (:last-name user))]
     [:div {:class "row-fluid"}

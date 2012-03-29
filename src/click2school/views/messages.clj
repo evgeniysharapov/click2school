@@ -1,7 +1,8 @@
 (ns click2school.views.messages
   (:require [click2school.models.messages :as messages]
-            [click2school.views.common :as common]
+			[click2school.models.user :as user]
             [click2school.utils :as utils]
+            [click2school.views.common :as common]
             [clojure.string :as s]
             [noir.session :as session]
             [noir.response :as resp])
@@ -72,7 +73,7 @@
                     (common/sidebar-section-header "Administration")
                     (common/sidebar-item (url-for students) "Students" :folder-close)
                     (common/sidebar-item (url-for classes) "Classes" :leaf))
-    (show-messages-inbox (messages/fetch-messages-for (:username (utils/me))))))
+    (show-messages-inbox (messages/find-by-username (:username (common/me))))))
 
 (defpage view-message [:get ["/message/:id" :id #"\d+"]] {id :id}
   (common/layout-with-navbar-and-sidebar
@@ -187,9 +188,8 @@
     (message-create-form)))
 
 (defpage message-create [:post "/message/create"] {:keys [to subject body]}
-  (messages/create (str (:first-name (utils/me)) " "(:last-name (utils/me))) to subject body)
-  (resp/redirect (url-for message-inbox))
-  )
+  (messages/create (user/fullname (common/me)) to subject body)
+  (resp/redirect (url-for message-inbox)))
 
 
 (defpage instant-messages "/instant" []

@@ -36,12 +36,6 @@
   (first
    (filter #(= username (:username %)) (fetch-list))))
 
-
-
-(defn substring? [s search]
-  (> (.indexOf  (.toUpperCase  (str s))  (.toUpperCase  (str search))) -1))
-
-
 (defn fuzzy-find [q]
   (filter #(or (substring? (:first-name %) q) (substring? (:last-name %) q)) (fetch-list)))
 
