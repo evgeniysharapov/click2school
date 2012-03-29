@@ -22,3 +22,10 @@
      [:p {}
       [:a {:shape "rect", :class "btn btn-primary btn-large"} "Learn more »"]]]))
 
+(defpage about "/about" []
+  (common/default-layout
+    [:div {:class "hero-unit"}
+     [:h1 "About Us"]
+     [:p "We all love reading about new things. We also like to remember what we read and use information to build our knowledge."]
+      [:p "However the workflow of finding, reading, storing, searching and sharing information on the web seems broken to us. It's very random and scattered to many places."]
+      [:p "Kippt grew from that frustration. We want to make your information workflow and archiving effortless."]]))
