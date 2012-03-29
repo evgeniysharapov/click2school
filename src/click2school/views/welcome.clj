@@ -18,9 +18,11 @@
       [:b  "Click2interact"] " is a web application that allows teachers, students and their parents communicate in the easy and most efficient manner."]
 
      [:p "Every day, teachers make countless real-time decisions and facilitate dozens of interactions between themselves and their students. Although they share this commonality, educators all over the country often talk about these decisions and interactions in different ways."]
-
-     [:p {}
-      [:a {:shape "rect", :class "btn btn-primary btn-large"} "Learn more »"]]]))
+     [:p {:class "signup"}
+      [:a {:title "Register for Click2Interact System" :href "/signup" :class "btn btn-success btn-huge"}
+              [:strong "Sign Up"]]
+     ]]
+    ))
 
 (defpage about "/about" []
   (common/default-layout
