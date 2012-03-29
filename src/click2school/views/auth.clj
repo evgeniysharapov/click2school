@@ -18,7 +18,7 @@
    [:fieldset {}
     [:legend {} "Login into Click2Interact System"]
     [:div {:class "control-group"}
-     [:label {:for "username", :class "control-label"} "Username"]
+     [:label {:for "username", :class "control-label"} "Username/Email"]
      [:div {:class "controls"}
       [:input {:type "text", :class "input-xlarge focused", :id "username", :name "username", :value ""}]]]
     [:div {:class "control-group"}
@@ -32,10 +32,11 @@
 
 
 (defn login! [{:keys [username password] :as user}]
-  (let [{stored-pass :password} (user/find-by-username user)]
+  (let [u (user/find-by-username user)
+        {stored-pass :password} u]
     (if (= stored-pass password)
       (do
-        (session/put! :username username)
+        (session/put! :username (user/fullname  u))
         (session/put! :user-id  (:id (user/find-by-username user))))
       (vali/set-error :username "Invalid username or password"))))
 
