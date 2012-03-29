@@ -66,14 +66,20 @@
   (filter #(or (utils/substring? (:first-name %) q) (utils/substring? (:last-name %) q)) (get-list)))
 
 (defn fullname [u]
-  (str (:first-name u) " " (:last-name u)))
+  (if (contains? u :fullname)
+    (:fullname u)
+    (str (:first-name u) " " (:last-name u))))
 
 (defn- mk-user-id []
   (rand-int 1000000))
 
 (defn create [user]
   (dosync
-   (alter *data* conj (merge {:id (mk-user-id) } user))))
+   (alter *data* conj
+          (merge {:id (mk-user-id)}
+                 (assoc user
+                   :first-name (if (contains? user :first-name) (:first-name user) (first (clojure.string/split (fullname user) #" +")))
+                   :last-name (if (contains? user :last-name) (:last-name user) (last (clojure.string/split (fullname user) #" +"))))))))
 
 (defn update [user]
   (let [other-users (filter #(not= (:id %) (:id user)) @*data*)
