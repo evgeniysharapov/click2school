@@ -1,9 +1,9 @@
 (ns  click2school.models.user
   (:require [click2school.utils :as utils]
-  			[noir.util.crypt :as crypt]
+            [noir.util.crypt :as crypt]
             [noir.validation :as validate]))
 
-(def- *data*
+(def *data*
   (ref
    [{:id 1,
      :first-name "Evgeniy",
