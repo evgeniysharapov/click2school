@@ -290,7 +290,7 @@
      ]
     ;    ]
    ))
-(layout-with-navbar "test" "test")
+;(layout-with-navbar "test" "test")
 
 (defn default-layout  [& content]
   (layout-with-navbar
