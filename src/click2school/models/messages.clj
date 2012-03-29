@@ -11,22 +11,22 @@
     {:id 4 :subject "Organizing meeting 3" :from "Jacob Thornton" :to "Chittu Desai" :sent "01/01/2012" :text "Dear Mr. Sharapov"}]))
 
 
-(defn fetch-list []
+(defn get-list []
   @*data*)
 
-(defn fetch [id]
+(defn find-by-id [id]
   (first
-   (filter #(= id (:id %)) (fetch-list))))
+   (filter #(= id (:id %)) (get-list))))
 
-(defn fetch-messages-for [username]
-  (filter #(= (user/fullname (user/find-by-username {:username  username})) (:to %)) (fetch-list)))
+(defn find-by-username [username]
+  (filter #(= (user/fullname (user/find-by-username {:username  username})) (:to %)) (get-list)))
 
-(defn- mk-new-message-id []
+(defn- mk-message-id []
   (rand-int 1000000))
 
 (defn create [sender recipient subject text]
   (dosync
-   (alter *data* conj {:id (mk-new-message-id),
+   (alter *data* conj {:id (mk-message-id),
                        :to recipient,
                        :from sender,
                        :sent (time/now),

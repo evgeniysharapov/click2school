@@ -92,7 +92,7 @@
                     (common/sidebar-section-header "Administration")
                     (common/sidebar-item (url-for students) "Students" :folder-close)
                     (common/sidebar-item (url-for classes) "Classes" :leaf))
-    (show-message (messages/fetch (Integer/parseInt id)))))
+    (show-message (messages/find-by-id (Integer/parseInt id)))))
 
 (defn message-create-form []
   [:form {:enctype "application/x-www-form-urlencoded",
