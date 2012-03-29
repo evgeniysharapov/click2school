@@ -1,9 +1,10 @@
 (ns click2school.views.user
   (:use [noir.core :only [defpage defpartial render]])
   (:require [click2school.views.common :as common]
+            [click2school.models.user :as user]
             [noir.response :as resp]))
 
-(defpartial new-user []
+(defpartial new-user [user]
   [:section {:id "general-info"}
    [:div {:class "page-header"}
     [:h1 {} "Register For Click2Interact"]]
@@ -16,22 +17,22 @@
        [:div {:class "control-group"}
         [:label {:for "fullname", :class "control-label"} "Your Full Name"]
         [:div {:class "controls"}
-         [:input {:type "text", :class "input-xlarge", :id "fullname"}]
+         [:input {:type "text", :class "input-xlarge", :id "fullname" :name "fullname" :value (user/fullname user)}]
          [:p {:class "help-block"} "Required."]]]
        [:div {:class "control-group"}
         [:label {:for "email", :class "control-label"} "Your Email"]
         [:div {:class "controls"}
-         [:input {:type "email", :class "input-xlarge", :id "email"}]
+         [:input {:type "email", :class "input-xlarge", :id "email" :name "email" :value (:email user)}]
          [:p {:class "help-block"} "Required. Activation email will be sent to this address"]]]
        [:div {:class "control-group"}
         [:label {:for "passw", :class "control-label"} "Create Password"]
         [:div {:class "controls"}
-         [:input {:type "password", :class "input-xlarge", :id "passw"}]
+         [:input {:type "password", :class "input-xlarge", :id "passw" :name "password" :value (:password user)}]
          [:p {:class "help-block"} "Required."]]]
        [:div {:class "control-group"}
         [:label {:for "organization", :class "control-label"} "Your Organization"]
         [:div {:class "controls"}
-         [:input {:type "email", :class "input-xlarge", :id "orgnaization"}]
+         [:input {:type "text", :class "input-xlarge", :id "orgnaization" :name "org" :value (:org user)}]
          [:p {:class "help-block"} "Purely optional, could be changed later"]]]
        [:div {:class "form-actions"}
 
@@ -100,12 +101,12 @@
           [:p {:class "help-block"} "Purely optional, could be changed later"]]]]]]]]])
 
 
-(defpage signup-new-user "/signup" {:as user}
+(defpage "/signup" {:as user}
   (common/default-layout
     (new-user user)))
 
-(defpage signup-done [:post "/signup"] {:as user}
-  (if (users/create! user)
-    (do (users/login user)
-        (resp/redirect "/messages"))
+(defpage [:post "/signup"] {:as user}
+  (if (user/create user)
+    ;(do (users/login user))
+    (resp/redirect "/messages")
     (render "/signup" user)))
