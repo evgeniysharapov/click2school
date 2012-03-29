@@ -59,8 +59,9 @@
    (filter #(and (= first-name (:first-name %)) (= last-name (:last-name %))) (get-list))))
 
 (defn find-by-username [{username :username}]
+  "Looking up by username or email (if no username was found)"
   (first
-   (filter #(= username (:username %)) (get-list))))
+   (filter #(or (= username (:username %)) (= username (:email %))) (get-list))))
 
 (defn fuzzy-find [q]
   (filter #(or (utils/substring? (:first-name %) q) (utils/substring? (:last-name %) q)) (get-list)))
