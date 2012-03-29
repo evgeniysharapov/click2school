@@ -24,18 +24,18 @@
 
 (defn find-by-id [id]
   (first
-   (filter #(= id (:id %)) (fetch-list))))
+   (filter #(= id (:id %)) (get-list))))
 
 (defn find-by-first-last-name [{ first-name :first-name, last-name :last-name}]
   (first
-   (filter #(and (= first-name (:first-name %)) (= last-name (:last-name %))) (fetch-list))))
+   (filter #(and (= first-name (:first-name %)) (= last-name (:last-name %))) (get-list))))
 
 (defn find-by-username [{username :username}]
   (first
-   (filter #(= username (:username %)) (fetch-list))))
+   (filter #(= username (:username %)) (get-list))))
 
 (defn fuzzy-find [q]
-  (filter #(or (substring? (:first-name %) q) (substring? (:last-name %) q)) (fetch-list)))
+  (filter #(or (utils/substring? (:first-name %) q) (utils/substring? (:last-name %) q)) (get-list)))
 
 (defn fullname [u]
   (str (:first-name u) " " (:last-name u)))
