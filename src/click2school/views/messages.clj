@@ -1,6 +1,6 @@
 (ns click2school.views.messages
   (:require [click2school.models.messages :as messages]
-			[click2school.models.user :as user]
+            [click2school.models.user :as user]
             [click2school.utils :as utils]
             [click2school.views.common :as common]
             [clojure.string :as s]
@@ -18,18 +18,19 @@
      [:input {:type "submit" :class "btn" :value (:text button)}])])
 
 (defn- message-inbox-message [msg]
-  [:tr {:id (str "message-in-inbox-" (:id msg))}
-     [:td {:colspan "1", :rowspan "1"}
-      [:input {:type "checkbox", :name "emailsSelection", :value "all"}]]
-     [:td {:colspan "1", :rowspan "1"} (:from msg)]
-     [:td {:colspan "1", :rowspan "1"} (:sent msg)]
-     [:td {:colspan "1", :rowspan "1"} (:subject msg)]
-     [:td {:colspan "1", :rowspan "1"} (:text msg)]])
+  [:tr {:id (str "message-in-inbox-" (:id msg)) }
+   [:td {:colspan "1", :rowspan "1"}
+    [:a {:href (str  "message/" (:id msg))}]
+    [:input {:type "checkbox", :name "emailsSelection", :value "all"}]]
+   [:td {:colspan "1", :rowspan "1"} (:from msg)]
+   [:td {:colspan "1", :rowspan "1"} (utils/human-date (:sent msg))]
+   [:td {:colspan "1", :rowspan "1"} (:subject msg)]
+   [:td {:colspan "1", :rowspan "1"} (:text msg)]])
 
 (defn show-messages-inbox [list-of-messages]
   [:div
    (show-control-panel default-button-list)
-   [:table {:class "table table-striped"}
+   [:table {:class "table table-striped" :id "message-inbox-table"}
     [:thead {}
      [:tr {}
       [:th {:colspan "1", :rowspan "1"}
@@ -41,15 +42,18 @@
     [:tbody {}
      (for [msg list-of-messages]
        (message-inbox-message msg))
-     ]]])
+     ]]
+   [:script "$('#message-inbox-table tr').click(function () {
+        location.href = $(this).find('td a').attr('href');
+    });"]])
 
 (defn show-message [msg]
   [:div {:class "hero-unit"}
-   [:h1 (:title msg)]
+   [:h2 (:subject msg)]
    [:h3 "From: " (:from msg)]
    [:p (:text msg)]
    [:p
-    [:button {:href (url-for messages) :class ["btn" "btn-primary"] } "Back"]]])
+    [:a {:href (url-for message-inbox) :class "btn" } "Back"]]])
 
 ;(def message-inbox "/messages")
 
