@@ -38,9 +38,10 @@
 (defn human-date
   "Convert a timestamp to a human readable date date, like '3 minutes ago' or '2 weeks ago'."
   [t]
-  (let [minutes-elapsed (ctime/in-minutes
+  (let [tm t;(tcoerce/from-long (.getTime t))
+        minutes-elapsed (ctime/in-minutes
                          (ctime/interval
-                          (tcoerce/from-long (.getTime t)) (ctime/now)))
+                          tm (ctime/now)))
         datetime (tform/unparse (tform/formatters :rfc822)
-                                (tcoerce/from-long (.getTime t)))]
+                                tm)]
     (describe-time-elapsed minutes-elapsed)))
