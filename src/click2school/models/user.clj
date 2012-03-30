@@ -20,8 +20,8 @@
      :first-name "Chittu",
      :last-name "Desai",
      :gender "Male",
-     :username "test2",
-     :password "test2",
+     :username "cdesai",
+     :password "cdesai",
      :email "chittu_d@yahoo.com",
      :org "Siemens",
      :roles [:parent]}
@@ -30,8 +30,8 @@
      :first-name "Darla",
      :last-name "Sparrow",
      :gender "Female",
-     :username "test3",
-     :password "test3",
+     :username "sparrow",
+     :password "sparrow",
      :email "test@gmail.com",
      :org "John Hopkins Elementary School",
      :roles [:teacher]}
@@ -44,7 +44,19 @@
      :password "test4",
      :email "roger.ellis@emai.com",
      :org "Siemens",
-     :roles [:parent]}]))
+     :roles [:parent]}
+
+    {:id 5,
+     :first-name "Manly",
+     :last-name "Man",
+     :gender "Male",
+     :username "a1",
+     :password "a1",
+     :email "roger.ellis@emai.com",
+     :org "Siemens",
+     :roles [:admin]}
+
+    ]))
 
 (defn get-list []
 "Returns list of all users"
