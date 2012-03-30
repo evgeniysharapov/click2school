@@ -18,8 +18,8 @@
   (first
    (filter #(= id (:id %)) (get-list))))
 
-(defn find-by-username [username]
-  (filter #(= (user/fullname (user/find-by-username {:username  username})) (:to %)) (get-list)))
+(defn find-by-user [user]
+  (filter #(= (user/fullname user) (:to %)) (get-list)))
 
 (defn- mk-message-id []
   (rand-int 1000000))

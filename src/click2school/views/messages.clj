@@ -77,7 +77,7 @@
                     (common/sidebar-section-header "Administration")
                     (common/sidebar-item (url-for students) "Students" :folder-close)
                     (common/sidebar-item (url-for classes) "Classes" :leaf))
-    (show-messages-inbox (messages/find-by-username (:username (common/me))))))
+    (show-messages-inbox (messages/find-by-user (common/me)))))
 
 (defpage view-message [:get ["/message/:id" :id #"\d+"]] {id :id}
   (common/layout-with-navbar-and-sidebar
