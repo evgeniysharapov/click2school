@@ -28,7 +28,7 @@
    [:p {} "© Click2Interact Company 2012"]])
 
 (defn- bootstrap-javascript []
-  (let [scripts (conj (map #(str "/bootstrap/js/bootstrap-" %) ["transition.js" "alert.js" "modal.js" "dropdown.js" "scrollspy.js" "tab.js" "tooltip.js" "popover.js" "button.js" "collapse.js" "carousel.js" "typeahead.js"]) "/bootstrap/js/jquery.js")]
+  (let [scripts (map #(str "/bootstrap/js/bootstrap-" %) ["transition.js" "alert.js" "modal.js" "dropdown.js" "scrollspy.js" "tab.js" "tooltip.js" "popover.js" "button.js" "collapse.js" "carousel.js" "typeahead.js"])]
     (for [js scripts]
       (include-js js))))
 
@@ -278,7 +278,7 @@
 (defpartial layout-with-navbar [navbar & content]
   (html5 
    ;   [:html {:lang "en"}
-   (bootstrap-javascript)
+   (default-layout-header)
     [:body {}
 
      navbar
@@ -289,7 +289,8 @@
 
       [:hr {}]
       (default-layout-footer)]
-     (default-layout-header)
+     (bootstrap-javascript)
+     ;(default-layout-header)
      ]
     ;    ]
    ))

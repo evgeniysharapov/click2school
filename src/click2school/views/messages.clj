@@ -124,7 +124,9 @@
      [:button {:type "submit", :class "btn"} "Cancel"]]]
  
    [:script {:type "text/javascript"}
-"    var autocomplete = $('#message-to').typeahead()
+    "
+$(document).ready(function(){
+var autocomplete = $('#message-to').typeahead()
         .on('keyup', function(ev){
 
             ev.stopPropagation();
@@ -168,7 +170,7 @@
 
                 }
             }
-        });"]
+        });});"]
    ])
 
 (defpage message-new "/message/new" []
