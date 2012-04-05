@@ -7,7 +7,8 @@
                            [clj-time "0.3.7"]
                            [org.clojure/data.json "0.1.2"]
                            [postgresql/postgresql "8.4-702.jdbc4"]
-                           [org.clojure/java.jdbc "0.1.3"]]
+                           [org.clojure/java.jdbc "0.1.3"]
+                           [lobos "1.0.0-SNAPSHOT"]]
             :main click2school.server)
 
 
