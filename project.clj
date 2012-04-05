@@ -9,7 +9,9 @@
                            [postgresql/postgresql "8.4-702.jdbc4"]
                            [mysql/mysql-connector-java "5.1.6"]
                            [org.clojure/java.jdbc "0.1.3"]
-                           [lobos "1.0.0-SNAPSHOT"]]
+                           [lobos "1.0.0-SNAPSHOT"]
+                           [korma "0.3.0-beta7"]
+                           [clojureql "1.0.0"]]
             :main click2school.server)
 
 
