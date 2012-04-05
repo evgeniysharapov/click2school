@@ -159,7 +159,7 @@
   (user/find-by-id
    (session/get :user-id)))
 
-(defn navbar-item [url title & rest ]
+(defpartial navbar-item [url title & rest ]
   (let [params (filter #(keyword?  %) rest)
         params1 (map #(name %) params)
         classes (join " " params1)
@@ -167,25 +167,23 @@
     [:li {:class classes}
      [:a {:shape "rect", :href url} title ]]))
 
-(defn navbar-login-item [url]
-  [:ul {:class "nav pull-right"}
-   [:li {}
+(defpartial navbar-login-item [url]
+  [:ul.nav.pull-right
+   [:li
     [:a {:shape "rect", :href url} "Login"]]])
 
-(defn navbar-logout-item [url username]
-  [:ul {:class "nav pull-right"}
-   [:li {}
+(defpartial navbar-logout-item [url username]
+  [:ul.nav.pull-right
+   [:li
     [:a {:shape "rect", :href url} (str "Logged in as " username ". ") "Logout?"]]])
 
-(navbar-item "about" "About" :active)
-
 (defn navbar [log-in-out  & contents]
-  [:div {:class "navbar navbar-fixed-top"}
-      [:div {:class "navbar-inner"}
-       [:div {:class "container"}
+  [:div.navbar.navbar-fixed-top
+      [:div.navbar-inner
+       [:div.container
         [:a {:shape "rect", :class "brand", :href "/"} "Click2Interact"]
-        [:div {:class "nav-collapse"}
-         [:ul {:class "nav"}
+        [:div.nav-collapse
+         [:ul.nav
           contents
           ]
          log-in-out
@@ -276,8 +274,7 @@
   (sidebar-content-with-alerts sidebar () content))
 
 (defpartial layout-with-navbar [navbar & content]
-  (html5 
-   ;   [:html {:lang "en"}
+  (html5
    (default-layout-header)
     [:body {}
 
@@ -290,11 +287,8 @@
       [:hr {}]
       (default-layout-footer)]
      (bootstrap-javascript)
-     ;(default-layout-header)
      ]
-    ;    ]
    ))
-;(layout-with-navbar "test" "test")
 
 (defn default-layout  [& content]
   (layout-with-navbar
