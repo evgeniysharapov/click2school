@@ -13,12 +13,12 @@
 
 ;;; teachers, parents, studetns 
 (def-new-table :roles
-  (varchar :role-name 10))
+  (varchar :role_name 10))
 
 (def-new-table :persons
-  (varchar :first-name 100)
-  (varchar :middle-name 100)
-  (varchar :last-name 100)
+  (varchar :first_name 100)
+  (varchar :middle_name 100)
+  (varchar :last_name 100)
   (varchar :org 100)
   (boolean :gender))
 
@@ -27,7 +27,7 @@
   (varchar :password 100)
   (refer-to :roles)
   (refer-to :persons)
-  (timestamp :last-logged-in :null)
+  (timestamp :last_logged_in :null)
   (check :name (> (length :name) 1))
   (check :name (> (length :password) 1)))
 
@@ -39,13 +39,13 @@
   (refer-to "from" :users))
 
 ;;; assignment types:  form, task, etc.
-(def-new-table :asgnmt-types
+(def-new-table :asgnmt_types
   (varchar :atype 25))
 
 ;;; Assignments: form, task, etc.
 (def-new-table :asgnmts
   (varchar :title 100)
-  (date :due-date :null)
+  (date :due_date :null)
   (text :content))
 
 ;;; Who assignment is assigned to
