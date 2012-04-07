@@ -12,7 +12,8 @@
                            [lobos "1.0.0-SNAPSHOT"]
                            [korma "0.3.0-beta7"]
                            [clojureql "1.0.3"]
-                           [clj-yaml "0.3.1"]]
+                           [clj-yaml "0.3.1"]
+                           [clj-record "1.1.1"]]
             :main click2school.server)
 
 
