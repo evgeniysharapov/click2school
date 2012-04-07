@@ -11,7 +11,6 @@
       (timestamp :created_on (default (now)))))
 
 (defn- refer-to-helper [cname table ptable]
-  (println cname)
   (integer table cname [:refer ptable :id :on-delete :set-null]))
 
 (defn refer-to
