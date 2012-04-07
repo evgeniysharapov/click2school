@@ -1,0 +1,73 @@
+roles:
+      - role_name: "ADMIN"
+      - role_name: "PRINCIPAL"
+      - role_name: "TEACHER"
+      - role_name: "PARENT"
+      - role_name: "STUDENT"
+
+persons:
+      - first_name: "Evgeniy"
+        middle_name: "N."
+        last_name: "Sharapov"
+        org: "My Organization"
+        email: "evgeniy.sharapov@gmail.com"
+        gender: true
+      - first_name: "Chittu"
+        last_name: "Desai"
+        email: "chittu_d@yahoo.com"
+        org: "Siemens"
+        gender: true
+      - first_name: "Darla"
+        last_name: "Sparrow"
+        email: "test@gmail.com"
+        org: "John Hopkins Elementary School"
+        gender: false
+      - first_name: "Roger"
+        last_name: "Ellis"
+        email: "roger.ellis@emai.com"
+        org: "Siemens"
+        gender: true
+      - first_name: "Manly"
+        last_name: "Man"
+        email: "roger.ellis@emai.com"
+        org: "Siemens"
+        gender: true
+users:
+      - name: "test"
+        password: "test"
+        role_id: 1
+        person_id: 1
+      - name: "cdesai"
+        password: "cdesai"
+        role_id: 4
+        person_id: 2
+      - name: "sparrow"
+        password: "sparrow"
+        role_id: 3
+        person_id: 3
+      - name: "test4"
+        password: "test4"
+        role_id: 2
+        person_id: 4
+      - name: "a1"
+        password: "a1"
+        role_id: 2
+        person_id: 5
+
+messages:
+      - subject: "Organize Celebration"
+        content: "Dear Evgeniy\nLet's organize our celebration\n\nSincerely yours, Chittu"
+        read: false
+        to_user_id: 1
+        from_user_id: 2
+      - subject: "Organize Celebration 2"
+        content: "Dear Chittu\nLet's organize our celebration\n\nSincerely yours, Evgeniy"
+        read: false
+        to_user_id: 2
+        from_user_id: 1
+      - subject: "Organize Celebration 3"
+        content: "Dear Evgeniy\nLet's organize our celebration\n\nSincerely yours, Darla"
+        read: false
+        to_user_id: 1
+        from_user_id: 3
+
