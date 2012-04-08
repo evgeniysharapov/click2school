@@ -1,8 +1,6 @@
 (ns  click2school.models.user
   (:require [clj-record.boot]
-            [click2school.models.person]
-            [noir.util.crypt :as crypt]
-            [noir.validation :as validate])
+            [click2school.models.person :as p])
   (:use [click2school.config.db]))
 
 (clj-record.core/init-model
