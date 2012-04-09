@@ -1,6 +1,6 @@
 (ns click2school.views.welcome
   (:require [click2school.views.common :as common]
-            [click2school.views.messages :as messages]
+            [click2school.views.message :as messages]
             [click2school.views.auth :as auth]
             [noir.response :as resp])
   (:use [noir.core :only [defpage url-for]]
