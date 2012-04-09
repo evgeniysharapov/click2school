@@ -1,10 +1,11 @@
 (ns click2school.views.common
   (:require [click2school.utils :as utils]
-            [noir.session :as session])
+            [click2school.models.user :as u]
+            [click2school.models.message :as m]
+            [noir.session :as sess]
+            [clojure.string :as s])
   (:use [noir.core :only [defpartial]]
-        [click2school.models.user :as user]
-        [hiccup.page-helpers]
-        [clojure.string :only (join)]))
+        [hiccup.page-helpers]))
 
 (defn- default-layout-header []
   [:head {}
@@ -155,15 +156,14 @@
    :zoom-out "icon-zoom-out"})
 
 (defn me []
-"Returns user from the session"
-  (user/find-by-id
-   (session/get :user-id)))
+  "Returns user from the session"
+  (u/get-record
+   (sess/get :user-id)))
 
 (defpartial navbar-item [url title & rest ]
   (let [params (filter #(keyword?  %) rest)
         params1 (map #(name %) params)
-        classes (join " " params1)
-        ]
+        classes (s/join " " params1)]
     [:li {:class classes}
      [:a {:shape "rect", :href url} title ]]))
 
@@ -181,7 +181,7 @@
   [:div.navbar.navbar-fixed-top
       [:div.navbar-inner
        [:div.container
-        [:a {:shape "rect", :class "brand", :href "/"} "Click2Interact"]
+        [:a.brand {:shape "rect", :href "/"} "Click2Interact"]
         [:div.nav-collapse
          [:ul.nav
           contents
@@ -299,3 +299,4 @@
   (layout-with-navbar
     navbar
     (sidebar-content sidebar content)))
+
