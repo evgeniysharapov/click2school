@@ -1,9 +1,9 @@
 (ns click2school.views.auth
   (:require [click2school.views.common :as common]
-            [click2school.models.user :as user]
-            [click2school.views.messages :as messages]
+            (click2school.models [user :as u]
+                                 [person :as p])
             [noir.response :as resp]
-            [noir.session :as session]
+            [noir.session :as sess]
             [noir.validation :as vali])
   (:use [noir.core :only [defpage url-for render]]
         [clojure.data.json :only (read-json json-str)]))
@@ -32,12 +32,11 @@
 
 
 (defn login! [{:keys [username password] :as user}]
-  (let [u (user/find-by-username user)
-        {stored-pass :password} u]
+  (let [usr (u/find-record {:name username})
+        {stored-pass :password} usr]
     (if (= stored-pass password)
       (do
-        (session/put! :username (user/fullname  u))
-        (session/put! :user-id  (:id (user/find-by-username user))))
+        (sess/put! :user-id  (:id usr)))
       (vali/set-error :username "Invalid username or password"))))
 
 ;;; when we get the login form
@@ -49,24 +48,15 @@
 ;;; we submit login
 (defpage [:post "/login"] {:as user}
   (if (login! user)
-    (resp/redirect (url-for messages/message-inbox))
-    (render "/login" user))
-;  (str "You tried to login as " username " with the password "
-;  password)
-  )
+    (resp/redirect "/messages")
+    (render "/login" user)))
 
 (defpage logout "/logout" []
   (common/default-layout
     [:h1 "Thank you for using Click2Interact"]))
 
 (defpage [:post "/finduser"] {:as q}
-  (json-str (map #'user/fullname  (user/fuzzy-find (:q q))))
-  ;(json-str (map #(assoc {} :name %)  (map #'user/fullname
-  ;(user/fuzzy-find (:q q)))))
-  )
+  (json-str (map p/fullname  (p/fuzzy-find (:q q)))))
 
 (defpage [:get "/finduser"] {:as q}
-  (json-str (map #'user/fullname  (user/fuzzy-find (:q q))))
-  ;(json-str (map #(assoc {} :name %)  (map #'user/fullname
-  ;(user/fuzzy-find (:q q)))))
-  )
+  (json-str (map p/fullname  (p/fuzzy-find (:q q)))))
