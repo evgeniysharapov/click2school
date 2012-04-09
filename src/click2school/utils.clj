@@ -35,13 +35,26 @@
      (= years 1) "a year ago"
      :else (str years " years ago"))))
 
-(defn human-date
-  "Convert a timestamp to a human readable date date, like '3 minutes ago' or '2 weeks ago'."
+(defn- human-date-helper
   [t]
-  (let [tm t;(tcoerce/from-long (.getTime t))
+  (let [tm t
         minutes-elapsed (ctime/in-minutes
                          (ctime/interval
                           tm (ctime/now)))
         datetime (tform/unparse (tform/formatters :rfc822)
                                 tm)]
     (describe-time-elapsed minutes-elapsed)))
+
+(defmulti human-date 
+  "Convert a timestamp to a human readable date date, like '3 minutes ago' or '2 weeks ago'."
+  class)
+
+(defmethod human-date java.sql.Timestamp [t]
+  (human-date-helper (tcoerce/from-long (.getTime t))))
+
+(defmethod human-date java.util.Date [t]
+  (human-date-helper (tcoerce/from-long (.getTime t))))
+
+(defmethod human-date org.joda.time.DateTime [t]
+  (human-date-helper t))
+
