@@ -5,7 +5,7 @@
             [noir.response :as resp]
             [noir.session :as sess]
             [noir.validation :as vali])
-  (:use [noir.core :only [defpage url-for render]]
+  (:use [noir.core :only [defpage url-for render pre-route]]
         [clojure.data.json :only (read-json json-str)]))
 
 
@@ -38,6 +38,13 @@
       (do
         (sess/put! :user-id  (:id usr)))
       (vali/set-error :username "Invalid username or password"))))
+
+(defn logged-in? []
+  (sess/get :user-id))
+
+(pre-route "/message*" {}
+           (when-not (logged-in?)
+             (resp/redirect "/login")))
 
 ;;; when we get the login form
 (defpage [:get "/login"] []
