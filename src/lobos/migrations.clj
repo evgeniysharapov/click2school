@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [alter drop bigint boolean char double float time])
   (:use (lobos [migration :only [defmigration]]
                core schema config helpers)
+        click2school.config.db
         (korma
          [db :only [defdb]]
          [core :only [insert values defentity]]))
@@ -82,13 +83,15 @@
 ;;; Insert some test data
 (defmigration add-basic-data
   (up [] (do
-           (defentity roles)
-           (insert roles (values (:roles (yaml/parse-string (slurp "./resources/fixture.yml")))))
-           (defentity persons)
-           (insert persons (values (:persons (yaml/parse-string (slurp "./resources/fixture.yml")))))
-           (defentity users)
-           (insert users (values (:users (yaml/parse-string (slurp "./resources/fixture.yml")))))
-           (defentity messages)
-           (insert messages (values (:messages (yaml/parse-string (slurp "./resources/fixture.yml")))))
+           (let [fixtures (yaml/parse-string (slurp "./resources/fixture.yml"))]
+             (defdb *db* db)
+             (defentity roles)
+             (insert roles (values (:roles fixtures)))
+             (defentity persons)
+             (insert persons (values (:persons fixtures)))
+             (defentity users)
+             (insert users (values (:users fixtures)))
+             (defentity messages)
+             (insert messages (values (:messages fixtures))))
            ))
   (down [] (print "delete data")))
