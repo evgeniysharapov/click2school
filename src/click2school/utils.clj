@@ -4,7 +4,8 @@
             [noir.session :as session]
             [clj-time.core :as ctime]
             [clj-time.coerce :as tcoerce]
-            [clj-time.format :as tform]))
+            [clj-time.format :as tform])
+  (:use [clojure.string :only (join)]))
 
 (defn substring? [s search]
   "Returns true if SEARCH is a substring of S"
@@ -58,3 +59,10 @@
 (defmethod human-date org.joda.time.DateTime [t]
   (human-date-helper t))
 
+(defn kw->str
+  "Converts keywords to the string where keywords are separated by a space. This is designed with css classes passed as keywords"
+  [& rest]
+  (->> rest
+       (filter #(keyword? %))
+       (map #(name %))
+       (join " " )))
