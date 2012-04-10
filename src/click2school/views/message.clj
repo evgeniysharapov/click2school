@@ -78,7 +78,7 @@
 
 (defmacro sidebar-for-page []
   `(common/sidebar (common/sidebar-section-header "Communication")
-                  (common/sidebar-item "#" ;(url-for message-inbox)
+                  (common/sidebar-item "/messages" ;(url-for message-inbox)
                                        "Messages" :inbox :active
                                        )
                   (common/sidebar-item (url-for instant-messages) "Instant Messages" :comment)
