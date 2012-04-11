@@ -25,7 +25,7 @@
     [:groups  "/groups"  "Groups"  :leaf ]]]
   )
 
-(defn item
+(defn- item
   "Creates item on the sidebar. REST contains keyword :active added to the sidebar if the sidebar item should be active and a keyword for the the icon"
   [url title & more ]
   (let [css-classes (->> (->>  more (filter #(= :active %))) (apply kw->str))
@@ -34,17 +34,17 @@
      [:a {:shape "rect", :href url}
       [:i {:class (when icon (icon BOOTSTRAP-ICONS))}] title]]))
 
-(defn section [title]
+(defn- section [title]
   [:li.nav-header title])
 
-(defn sidebar [ & items ]
+(defn- sidebar-main [ & items ]
   [:ul.nav.nav-list
    items
    ])
 
-(defn build-sidebar
+(defn sidebar
   [bar]
-  (sidebar
+  (sidebar-main
    (for [sec bar]
        (do
         (section (first sec))
