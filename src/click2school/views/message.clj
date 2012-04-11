@@ -3,13 +3,15 @@
                                  [user :as usr]
                                  [person :as prsn])
             [click2school.utils :as utils]
-            [click2school.views.common :as common]
+            (click2school.views  [common :as common]
+                                 [sidebar :as sidebar])
             [clojure.string :as s]
             [noir.session :as sess]
             [noir.response :as resp])
   (:use noir.core
         (clj-time [format :only (unparse formatters)]
                   [coerce :only (from-long)])))
+
 
 (def default-button-list [{:url "/message/new" :text "New"}
                           {:url "/message/delete" :text "Delete"}])
@@ -76,38 +78,30 @@
    [:p
     [:a {:href "/messages" :class "btn" } "Back"]]])
 
-(defmacro sidebar-for-page []
-  `(common/sidebar (common/sidebar-section-header "Communication")
-                  (common/sidebar-item "/messages" ;(url-for message-inbox)
-                                       "Messages" :inbox :active
-                                       )
-                  (common/sidebar-item (url-for instant-messages) "Instant Messages" :comment)
-                  (common/sidebar-item (url-for emails) "Emails" :envelope)
-                  (common/sidebar-item (url-for phone-calls) "Phone Calls" :inbox)
-                  (common/sidebar-section-header "Calendar")
-                  (common/sidebar-item (url-for meetings) "Meetings" :user)
-                  (common/sidebar-item (url-for papers-due) "Papers Due" :file)
-                  (common/sidebar-section-header "Quizzes")
-                  (common/sidebar-item (url-for quizz1) "Quizz 1" :star)
-                  (common/sidebar-item (url-for quizz2) "Quizz 2" :empty)
-                  (common/sidebar-item (url-for quizz3) "Quizz 3" :heart)
-                  (common/sidebar-section-header "Administration")
-                  (common/sidebar-item (url-for students) "Students" :folder-close)
-                  (common/sidebar-item (url-for classes) "Classes" :leaf)))
+(comment 
+  (defmacro defview [name url params body]
+    `(defpage ~name ~url ~params
+       (common/layout-with-navbar-and-sidebar
+         (common/default-navbar (sess/get :username ))
+         (sidebar/sidebar
+          (sidebar/activate-item sidebar/*default-sidebar* :messages))
+         ~@body))))
 
-(defpage message-inbx "/messages" []
+(defpage messages-inbox "/messages" {}
   (common/layout-with-navbar-and-sidebar
     (common/default-navbar (sess/get :username ))
-    (sidebar-for-page )
+    (sidebar/sidebar
+     (sidebar/activate-item sidebar/*default-sidebar* :messages))
     (show-messages-inbox (usr/find-messages-to (common/me)))))
 
 (defpage view-message [:get ["/message/:id" :id #"\d+"]] {id :id}
   (common/layout-with-navbar-and-sidebar
     (common/default-navbar  (sess/get :username ))
-    (sidebar-for-page)
+    (sidebar/sidebar
+     (sidebar/activate-item sidebar/*default-sidebar* :messages))
     (show-message (msg/get-record (Integer/parseInt id)))))
 
-(defn message-create-form []
+(defn message-create-form [{:keys [to subject body]}]
   [:form {:enctype "application/x-www-form-urlencoded",
           :action "/message/create"
           :method "POST",
@@ -117,15 +111,15 @@
     [:div {:class "control-group"}
      [:label {:for "message-to", :class "control-label"} "To"]
      [:div {:class "controls"}
-      [:input {:type "text", :class "input-xlarge focused", :data-provide "typeahead", :id "message-to", :name "to"}]]]
+      [:input#message-to {:type "text", :class "input-xlarge focused", :data-provide "typeahead", :name "to" :value to}]]]
     [:div {:class "control-group"}
      [:label {:for "message-subject", :class "control-label"} "Subject"]
      [:div {:class "controls"}
-      [:input {:type "text", :class "input-xlarge focused", :id "message-subject", :name "subject", :placeholder "Subject of the Message"}]]]
+      [:input#message-subject {:type "text", :class "input-xlarge focused", :name "subject", :placeholder "Subject of the Message" :value subject}]]]
     [:div {:class "control-group"}
      [:label {:for "message-body", :class "control-label"} ""]
      [:div {:class "controls"}
-      [:textarea { :class "input-xlarge focused" :rows "10" :id "message-body" :name "body"}]
+      [:textarea { :class "input-xlarge focused" :rows "10" :id "message-body" :name "body"} body]
       ]]
     [:div {:class "form-actions"}
      [:button {:type "submit", :class "btn btn-primary" :name "send"} "Send"] "&nbsp;"
@@ -180,85 +174,82 @@ var autocomplete = $('#message-to').typeahead()
         });});"]
    ])
 
-(defpage message-new "/message/new" []
+(defpage message-new "/message/new" {:as message}
   (common/layout-with-navbar-and-sidebar
     (common/default-navbar  (sess/get :username))
-    (sidebar-for-page)
-    (message-create-form)))
+    (sidebar/sidebar
+     (sidebar/activate-item sidebar/*default-sidebar* :messages))
+    (message-create-form message)))
+
+(defn valid-addressee? [name]
+  (not (nil?  (-> name
+                  prsn/find-person-by-fullname))))
 
 (defpage [:post "/message/create"] {:keys [to subject body cancel]}
   (if cancel
-    (resp/redirect "/messages")
-    (let [from-user-id (:id (common/me))
-          to-user-id (-> to prsn/find-person-by-fullname prsn/find-user first :id)]
-      (msg/create {:from_user_id from-user-id
-                   :to_user_id to-user-id
-                   :subject subject,
-                   :content body})
-      (resp/redirect "/messages"))))
+    (resp/redirect (url-for page-messages))
+    (let [from-user-id (:id (common/me))]
+      (if (valid-addressee? to)
+        (let [to-user-id (-> to prsn/find-person-by-fullname prsn/find-user first :id)]
+          (msg/create {:from_user_id from-user-id
+                       :to_user_id to-user-id
+                       :subject subject,
+                       :content body})
+          (resp/redirect (url-for messages-inbox)))
+        (render message-new {:to to :subject subject :body body})))))
 
-(defpage instant-messages "/instant" []
+(defpage instant-messages "/instants" []
   (common/layout-with-navbar-and-sidebar
     (common/default-navbar (sess/get :username ))
-    (sidebar-for-page)
+    (sidebar/sidebar
+     (sidebar/activate-item sidebar/*default-sidebar* :instants))
     [:h1 "Instant Messages"]))
-
-(defpage emails "/emails" []
-  (common/layout-with-navbar-and-sidebar
-    (common/default-navbar (sess/get :username ))
-    (sidebar-for-page)
-   [:h1 "Emails"]))
-
-(defpage phone-calls "/phonecalls" []
-  (common/layout-with-navbar-and-sidebar
-    (common/default-navbar (sess/get :username ))
-    (sidebar-for-page)
-    [:h1 "Phone Calls"]))
 
 (defpage meetings "/meetings" []
   (common/layout-with-navbar-and-sidebar
     (common/default-navbar (sess/get :username ))
-    (sidebar-for-page)
+    (sidebar/sidebar
+     (sidebar/activate-item sidebar/*default-sidebar* :meetings))
     [:h1 "Meetings"]))
 
 (defpage papers-due "/papers" []
   (common/layout-with-navbar-and-sidebar
     (common/default-navbar (sess/get :username ))
-    (sidebar-for-page)
+    (sidebar/sidebar
+     (sidebar/activate-item sidebar/*default-sidebar* :papers))
     [:h1 "Papers Due"]))
-
-(defpage quizzes "/quizzes" []
-  (common/layout-with-navbar-and-sidebar
-    (common/default-navbar (sess/get :username ))
-    (sidebar-for-page)
-    [:h1 "Quizzes"]))
 
 (defpage quizz1 "/quizz/1" []
   (common/layout-with-navbar-and-sidebar
     (common/default-navbar (sess/get :username ))
-    (sidebar-for-page)
+    (sidebar/sidebar
+     (sidebar/activate-item sidebar/*default-sidebar* :quizz1))
     [:h1 "Quizz 1"]))
 
 (defpage quizz2 "/quizz/2" []
   (common/layout-with-navbar-and-sidebar
     (common/default-navbar (sess/get :username ))
-    (sidebar-for-page)
+    (sidebar/sidebar
+     (sidebar/activate-item sidebar/*default-sidebar* :quizz2))
     [:h1 "Quizz 2"]))
 
 (defpage quizz3 "/quizz/3" []
   (common/layout-with-navbar-and-sidebar
     (common/default-navbar (sess/get :username ))
-    (sidebar-for-page)
+    (sidebar/sidebar
+     (sidebar/activate-item sidebar/*default-sidebar* :quizz3))
     [:h1 "Quizz 3"]))
 
 (defpage students "/students" []
   (common/layout-with-navbar-and-sidebar
     (common/default-navbar (sess/get :username ))
-    (sidebar-for-page)
+    (sidebar/sidebar
+     (sidebar/activate-item sidebar/*default-sidebar* :students))
     [:h1 "Students"]))
 
 (defpage classes "/classes" []
   (common/layout-with-navbar-and-sidebar
     (common/default-navbar (sess/get :username ))
-    (sidebar-for-page)
+    (sidebar/sidebar
+     (sidebar/activate-item sidebar/*default-sidebar* :classes))
     [:h1 "Classes"]))

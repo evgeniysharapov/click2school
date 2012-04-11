@@ -82,41 +82,6 @@
       (navbar-item "#about" "About")
       (navbar-item "#contact" "Contact"))))
 
-(defn sidebar-item
-  ([url title icon]
-     [:li {}
-       [:a {:shape "rect", :href url}
-        [:i {:class (icon BOOTSTRAP-ICONS)}] title]])
-  ([url title icon active]
-      [:li {:class "active"}
-       [:a {:shape "rect", :href url}
-        [:i {:class (icon BOOTSTRAP-ICONS)}] title]]))
-
-(defn sidebar-section-header [title]
-  [:li {:class "nav-header"} title])
-
-(defn sidebar [ & items ]
-  [:ul {:class "nav nav-list"}
-   items
-   ])
-
-(defn default-sidebar []
-  (sidebar (sidebar-section-header "Communication")
-           (sidebar-item "#" "Messages" :inbox :active)
-           (sidebar-item "#" "Instant Messages" :comment)
-           (sidebar-item "#" "Emails" :envelope)
-           (sidebar-item "#" "Phone Calls" :inbox)
-           (sidebar-section-header "Calendar")
-           (sidebar-item "#" "Meetings" :user)
-           (sidebar-item "#" "Papers Due" :file)
-           (sidebar-section-header "Quizzes")
-           (sidebar-item "#" "Quizz 1" :star)
-           (sidebar-item "#" "Quizz 2" :empty)
-           (sidebar-item "#" "Quizz 3" :heart)
-           (sidebar-section-header "Administration")
-           (sidebar-item "#" "Students" :folder-close)
-           (sidebar-item "#" "Classes" :leaf)))
-
 (defn alert [type & content]
   [:div {:class (str "alert " type " fade in")}
    [:a {:shape "rect", :class "close", :data-dismiss "alert"} "×"]
