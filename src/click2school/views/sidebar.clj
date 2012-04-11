@@ -10,7 +10,7 @@
 ;;;
 (def *default-sidebar*
   [["Communication"
-    [:message "/messages" "Messages" :inbox :active]
+    [:messages "/messages" "Messages" :inbox :active]
     [:instants "/instants" "Instant Messages" :comment]]
    ["Calendar"
     [:meetings  "/meetings"  "Meetings"  :user ]
