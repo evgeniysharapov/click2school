@@ -82,6 +82,13 @@
                     (apply fn (list i))
                     )))))))
 
+(defn deactivate-sidebar
+  "Deactivates all items in the sidebar"
+  [bar]
+  (letfn [(is-not-active? [x] (not= x :active))]
+    (apply #'alter-all-items (list bar #(vec (filter is-not-active? %))))
+    ))
+
 (defn activate-item
   "Activates item k in sidebar bar"
   [bar k]
@@ -97,9 +104,3 @@
     ))
 ;; (deactivate-item *default-sidebar* :message)
 
-(defn deactivate-sidebar
-  "Deactivates all items in the sidebar"
-  [bar]
-  (letfn [(is-not-active? [x] (not= x :active))]
-    (apply #'alter-all-items (list bar #(vec (filter is-not-active? %))))
-    ))
