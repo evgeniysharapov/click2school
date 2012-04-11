@@ -43,6 +43,7 @@
    ])
 
 (defn sidebar
+  "Creates hiccup sidebar out of the sidebar stucture."
   [bar]
   (sidebar-main
    (for [sec bar]
@@ -50,7 +51,55 @@
         (section (first sec))
         (map #(apply item (rest %)) (rest  sec))))))
 
-(defn- find-sb-item-by-key
+(defn- find-section-by-item-key
   "Returns a sidebar item by its key"
-  [k sb]
-  (first (filter #(and (seq? %) (= :classes (first %))) sb)))
+  [sb k]
+  (letfn [(in-section [sec]
+            (first  (filter #(= (first %) k) (rest sec)))) ]
+    (filter in-section  sb)))
+;(find-section-by-item-key *default-sidebar* :papers)
+
+(defn alter-item
+  "Modifies item in the bar using function fn and a key k pointing to the item (do not forget that item is a vector)"
+  [bar k fn]
+  (vec (for [sec bar]
+         (let [[title & items] sec]
+           (vec
+            (cons title
+                  (for [[kk & _ :as i] items]
+                    (if (= kk k)
+                      (apply fn (list i))
+                      i))))))))
+
+(defn alter-all-items
+  "Modifies all items in the bar using function fn"
+  [bar fn]
+  (vec (for [sec bar]
+         (let [[title & items] sec]
+           (vec
+            (cons title
+                  (for [i items]
+                    (apply fn (list i))
+                    )))))))
+
+(defn activate-item
+  "Activates item k in sidebar bar"
+  [bar k]
+  (apply #'alter-item (list bar k #(if (nil? (some #{:active} %)) (conj % :active) %))))
+;; (activate-item *default-sidebar* :message)
+;; (activate-item *default-sidebar* :instants)
+
+(defn deactivate-item
+  "Deactivates item k in sidebar bar"
+  [bar k]
+  (letfn [(is-not-active? [x] (not= x :active))]
+    (apply #'alter-item (list bar k #(vec (filter is-not-active? %))))
+    ))
+;; (deactivate-item *default-sidebar* :message)
+
+(defn deactivate-sidebar
+  "Deactivates all items in the sidebar"
+  [bar]
+  (letfn [(is-not-active? [x] (not= x :active))]
+    (apply #'alter-all-items (list bar #(vec (filter is-not-active? %))))
+    ))
