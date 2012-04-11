@@ -92,7 +92,9 @@
 (defn activate-item
   "Activates item k in sidebar bar"
   [bar k]
-  (apply #'alter-item (list bar k #(if (nil? (some #{:active} %)) (conj % :active) %))))
+  (do
+    (deactivate-sidebar bar)
+    (apply #'alter-item (list bar k #(if (nil? (some #{:active} %)) (conj % :active) %)))))
 ;; (activate-item *default-sidebar* :message)
 ;; (activate-item *default-sidebar* :instants)
 
