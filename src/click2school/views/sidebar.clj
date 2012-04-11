@@ -10,7 +10,7 @@
 ;;;
 (def *default-sidebar*
   [["Communication"
-    [:messages "/messages" "Messages" :inbox :active]
+    [:messages "/messages" "Messages" :inbox]
     [:instants "/instants" "Instant Messages" :comment]]
    ["Calendar"
     [:meetings  "/meetings"  "Meetings"  :user ]
@@ -20,9 +20,10 @@
     [:quizz2  "/quizz/2"  "Quizz 2"  :empty ]
     [:quizz3  "/quizz/3"  "Quizz 3"  :heart ]]
    ["Administration"
-    [:students  "/students"  "Students"  :folder-close ]
+    [:students  "/students"  "Students"  :folder-close]
     [:classes  "/classes"  "Classes"  :leaf ]
-    [:groups  "/groups"  "Groups"  :leaf ]]]
+    [:groups  "/groups"  "Groups"  :leaf ]
+    [:groups  "/forms"  "Forms"  :leaf ]]]
   )
 
 (defn- item
