@@ -14,15 +14,15 @@
      [:meta {:name "viewport", :content "width=device-width, initial-scale=1.0"}]
      [:meta {:name "description", :content ""}]
      [:meta {:name "author", :content "Evgeniy N. Sharapov"}]
-     [:link {:href "/css/reset.css", :rel "stylesheet"}]
      [:link {:href "/bootstrap/css/bootstrap.css", :rel "stylesheet"}]
      [:style {} "body { padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */}"]
      [:link {:href "/bootstrap/css/bootstrap-responsive.css", :rel "stylesheet"}]
-     [:link {:href "/css/site.css", :rel "stylesheet"}]
+   [:link {:href "/css/site.css", :rel "stylesheet"}]
+   (comment
      [:link {:rel "shortcut icon", :href "images/favicon.ico"}]
      [:link {:rel "apple-touch-icon", :href "images/apple-touch-icon.png"}]
      [:link {:rel "apple-touch-icon", :sizes "72x72", :href "images/apple-touch-icon-72x72.png"}]
-   [:link {:rel "apple-touch-icon", :sizes "114x114", :href "images/apple-touch-icon-114x114.png"}]
+     [:link {:rel "apple-touch-icon", :sizes "114x114", :href "images/apple-touch-icon-114x114.png"}])
    (include-js "/bootstrap/js/jquery.js")])
 
 (defn- default-layout-footer []
