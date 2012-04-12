@@ -13,17 +13,17 @@
     [:messages "/messages" "Messages" :inbox]
     [:instants "/instants" "Instant Messages" :comment]]
    ["Calendar"
-    [:meetings  "/meetings"  "Meetings"  :user ]
+    [:meetings  "/meetings"  "Meetings"  :calendar ]
     [:papers  "/papers"  "Papers Due"  :file ]]
    ["Quizzes"
     [:quizz1  "/quizz/1"  "Quizz 1"  :star ]
-    [:quizz2  "/quizz/2"  "Quizz 2"  :empty ]
+    [:quizz2  "/quizz/2"  "Quizz 2"  :star-empty ]
     [:quizz3  "/quizz/3"  "Quizz 3"  :heart ]]
    ["Administration"
     [:students  "/students"  "Students"  :folder-close]
     [:classes  "/classes"  "Classes"  :leaf ]
-    [:groups  "/groups"  "Groups"  :leaf ]
-    [:groups  "/forms"  "Forms"  :leaf ]]]
+    [:groups  "/groups"  "Groups"  :user ]
+    [:groups  "/forms"  "Forms"  :list-alt ]]]
   )
 
 (defn- item
