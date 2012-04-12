@@ -28,7 +28,7 @@
       [:th "Author"]]]
     [:tbody
      (for [ {:keys [id title description composer_user_id]} (form/find-records ["1=1"])]
-          [:tr {:id (str "sent-forms-form-136")}
+          [:tr {:id (str "sent-forms-form-" id)}
            [:td id [:a {:href (str  "forms/" id)}]]
            [:td title]
            [:td description]
