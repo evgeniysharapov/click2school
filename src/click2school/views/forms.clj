@@ -37,3 +37,9 @@
      (sidebar/activate-item sidebar/*default-sidebar* :forms))
     (list-of-forms)))
 
+(defpage forms-view [:get ["/forms/:id" :id #"\d+"]] {:keys [id]})
+
+(defpage forms-create [:post "/forms/create"] {:keys [username password]}
+  (str "You tried to login as " username " with the password " password))
+
+(defpage forms-send [:post "/forms/:id/send" :id #"\d+"] {:keys [id]})
