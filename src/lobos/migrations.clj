@@ -57,29 +57,6 @@
   (refer-to "to" :users)
   (refer-to "from" :users))
 
-;;; assignment types:  form, task, etc.
-(def-new-table :asgnmt_types
-  (varchar :atype 25))
-
-;;; Assignments: form, task, etc.
-(def-new-table :asgnmts
-  (varchar :title 100)
-  (date :due_date :null)
-  (text :content))
-
-;;; Who assignment is assigned to
-;;; check marks and their time show that it checked and when
-(def-new-table :asgnees
-  (boolean :checkmark)
-  (timestamp :checked :null)
-  (refer-to :asgnmts)
-  (refer-to :users))
-
-;;; Who assigned the assignment
-(def-new-table :asgners
-  (refer-to :asgnmts)
-  (refer-to :users))
-
 ;;; Insert some test data
 (defmigration add-basic-data
   (up [] (do
