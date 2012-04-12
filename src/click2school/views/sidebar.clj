@@ -16,6 +16,7 @@
     [:meetings  "/meetings"  "Meetings"  :calendar ]
     [:papers  "/papers"  "Papers Due"  :file ]]
    ["Quizzes"
+    [:questions "/questions" "Questions" :question-sign]
     [:quizz1  "/quizz/1"  "Quizz 1"  :star ]
     [:quizz2  "/quizz/2"  "Quizz 2"  :star-empty ]
     [:quizz3  "/quizz/3"  "Quizz 3"  :heart ]]
