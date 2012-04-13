@@ -1,0 +1,40 @@
+questions:
+  - title: "Distance between Atlanta and New York"
+    qtype: "TEXT"
+    question: "How many miles from Atlanta to New York ?"
+  - title: "Astronomy Question 1"
+    qtype: "CHOICE"
+    question: "Which one of the following is a planet"
+  - title: "BIology Question 1"
+    qtype: "MULTIPLE"
+    question: "Which of the following animals are birds?"
+  - title: "Terms and Conditions"
+    qtype: "BOOLEAN"
+    question: "I, hereby by checking this box agree with terms and conditions of using this form."
+
+answer_options:
+  - question_id: 2
+    correct: false
+    t_answer: "Sun"
+  - question_id: 2
+    correct: false
+    t_answer: "Moon"
+  - question_id: 2
+    correct: true
+    t_answer: "Earth"
+  - question_id: 3
+    correct: false
+    t_answer: "Tiger"
+  - question_id: 3
+    correct: true
+    t_answer: "Pinguin"
+  - question_id: 3
+    correct: false
+    t_answer: "Cat"
+  - question_id: 3
+    correct: true
+    t_answer: "Cardinal"
+
+
+
+

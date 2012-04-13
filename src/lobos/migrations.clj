@@ -5,7 +5,7 @@
         click2school.config.db
         (korma
          [db :only [defdb]]
-         [core :only [insert values defentity]]))
+         [core :only [insert values defentity delete]]))
   (:require [clojure.java.jdbc :as sql]
             [clj-yaml.core :as yaml]))
 
@@ -57,29 +57,6 @@
   (refer-to "to" :users)
   (refer-to "from" :users))
 
-;;; assignment types:  form, task, etc.
-(def-new-table :asgnmt_types
-  (varchar :atype 25))
-
-;;; Assignments: form, task, etc.
-(def-new-table :asgnmts
-  (varchar :title 100)
-  (date :due_date :null)
-  (text :content))
-
-;;; Who assignment is assigned to
-;;; check marks and their time show that it checked and when
-(def-new-table :asgnees
-  (boolean :checkmark)
-  (timestamp :checked :null)
-  (refer-to :asgnmts)
-  (refer-to :users))
-
-;;; Who assigned the assignment
-(def-new-table :asgners
-  (refer-to :asgnmts)
-  (refer-to :users))
-
 ;;; Insert some test data
 (defmigration add-basic-data
   (up [] (do
@@ -94,4 +71,71 @@
              (defentity messages)
              (insert messages (values (:messages fixtures))))
            ))
-  (down [] (print "delete data")))
+  (down [] (do
+             (defdb *db* db)
+             (defentity messages)
+             (delete messages)
+             (defentity users)
+             (delete users)
+             (defentity persons)
+             (delete persons)
+             (defentity roles)
+             (delete roles))))
+
+;;; TODO: add support materials (images, etc.)
+(def-new-table :questions
+  (varchar :title 100)
+  (varchar :qtype 25); either of CHOICE, BOOLEAN, TEXT, MULTIPLE
+  (ntext   :question))
+;;; BOOLEAN would just require check one box (e.g. I agree with terms
+;;; and conditions)
+
+;;; answers for CHOICE and MULTIPLE are stored here.
+(def-new-table :answer_options
+  (refer-to :questions)
+  (boolean :correct)                    ; whether it is a correct answer or not
+  (ntext :t_answer)                     ; text answer
+;  (boolean :b_answer)                   ; yes or no
+)
+;;; This is a form (or questionnaire)
+(def-new-table :forms
+  (varchar :title 25)
+  (varchar :description 200)
+  (refer-to "composer" :users))
+
+;;; Questions that are put in a form
+(def-new-table :form_questions
+  (refer-to :forms)
+  (refer-to :questions)
+  )
+
+;;; Answers to the questions on the form
+(def-new-table :form_q_replies
+  (refer-to :form_questions)
+  (refer-to "respondent" :users)
+  ;; freeform answer (could be null)
+  (ntext :answer)
+  )
+
+;;; when a user was choosing an answer (or choosing multiple ones)
+;;; we put his choices here
+(def-new-table :form_q_reply_choices
+  (refer-to :form_q_replies)            ; question reply
+  (refer-to :answer_options)            ; what was chosen
+  )
+
+;;; Insert some test data
+(defmigration add-question-answer-data
+  (up [] (do
+           (let [fixtures (yaml/parse-string (slurp "./resources/fixture_01.yml"))]
+             (defdb *db* db)
+             (defentity questions)
+             (insert questions (values (:questions fixtures)))
+             (defentity answer_options)
+             (insert answer_options (values (:answer_options fixtures))))
+           ))
+  (down [] (do (defdb *db* db)
+               (defentity answer_options)
+               (delete answer_options)
+               (defentity questions)
+               (delete questions))))
