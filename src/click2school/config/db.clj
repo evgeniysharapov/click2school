@@ -1,5 +1,5 @@
 (ns click2school.config.db
-  (:require [clojure.string :as str]()
+  (:require [clojure.string :as s])
   (:import (java.net URI)))
 
 (defn heroku-db
@@ -13,8 +13,8 @@
       (merge
        {:subname (str "//" host ":" port path)}
        (when-let [user-info (.getUserInfo url)]
-         {:user (first (str/split user-info #":"))
-          :password (second (str/split user-info #":"))})))))
+         {:user (first (s/split user-info #":"))
+          :password (second (s/split user-info #":"))})))))
 
 
 
