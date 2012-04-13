@@ -133,7 +133,6 @@
     ;; post a form in a base
     (resp/redirect (url-for forms-edit {:id (:id f)}))
     ))
-(formq/create {:form_id 5 :question_id 1})
 
 (defpage forms-update [:post "/forms/update"] {:keys [id title desription composer_user_id] :as frm}
   (form/update frm)
