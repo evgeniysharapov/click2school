@@ -1,6 +1,7 @@
 (ns click2school.config.migration
   (:require [lobos.config]
-            [lobos.core]))
+            [lobos.core])
+  )
 
 (defn -main []
   (print "Migrating database...")
