@@ -21,7 +21,7 @@
 (def db (merge {:classname "org.postgresql.Driver"
                 :subprotocol "postgresql"
                 :subname "//localhost:5432/click2school"}
-               (heroku-db))
+               (heroku-db)))
 
 (comment 
   (def db {:classname "org.postgresql.Driver"
