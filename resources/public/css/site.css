@@ -13,3 +13,11 @@
 p.signup {
     text-align: right;
 }
+
+.btn:first-child {
+    margin-left: 0;
+}
+
+button.btn, input.btn[type="submit"] {
+    margin-left: 10px;
+}
