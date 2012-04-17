@@ -40,6 +40,6 @@
 
 
 (defview questions-page "/questions" []
-  :forms
+  :questions
   (list-of-questions-and-answers))
 
