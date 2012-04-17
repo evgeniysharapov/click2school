@@ -1,10 +1,7 @@
 (ns click2school.views.questions
-  (:require (click2school.views [sidebar :as sidebar]
-                                [common :as common])
-            (click2school.models [question :as question]
-                                 )
-            [noir.session :as sess])
-  (:use [noir.core :only (defpage defpartial)]))
+  (:require (click2school.models [question :as question]))
+  (:use [noir.core :only (defpage defpartial)]
+        [click2school.views.common :only [defview]]))
 
 
 (defpartial list-of-questions-and-answers []
@@ -41,9 +38,8 @@
     [:button.btn.btn-success "Add More"]]
    ])
 
-(defpage questions-page "/questions" []
-  (common/layout-with-navbar-and-sidebar
-    (common/default-navbar (sess/get :username ))
-    (sidebar/sidebar
-     (sidebar/activate-item sidebar/*default-sidebar* :forms))
-    (list-of-questions-and-answers)))
+
+(defview questions-page "/questions" []
+  :forms
+  (list-of-questions-and-answers))
+
