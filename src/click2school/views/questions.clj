@@ -37,7 +37,8 @@
          [:td [:a {:href "#" :title "Find where else this question has been used"} "Usage"]]
          ])
       ]
-     ]]
+     ]
+    [:button.btn.btn-success "Add More"]]
    ])
 
 (defpage questions-page "/questions" []
