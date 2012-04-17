@@ -15,10 +15,10 @@
    [:h2 "Assortment of Questions"]
    [:p "You can check the questions you like and then press the button to create a quizz or form out of them. Do not worry about the order you can arrange question later."]
    [:form.form-horizontal {:action "/form/create" :method "POST"}
-    [:label "Create from selection"]
-    [:button.btn {:type "submit"} "Form" ] "&nbsp;"
-    [:button.btn {:type "submit"} "Quiz" ] "&nbsp;"
-    [:input.span3.pull-right {:type "text" :placeholder "Filter questions"}]
+    [:label [:h4 "Create from selection"]]
+    [:button.btn {:type "submit"} "Form" ]
+    [:button.btn {:type "submit"} "Quiz" ]
+    [:input.pull-right {:type "text" :placeholder "Search questions"}]
     [:table.table.table-striped
      [:thead
       [:tr
