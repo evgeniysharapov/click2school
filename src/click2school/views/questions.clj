@@ -4,6 +4,21 @@
         [click2school.views.common :only [defview]]))
 
 
+(defn q-id->html
+  "Turns DB id of the question into its HTML counterpart and a form input name. Returns string."
+  [a]
+  (str "q-" a))
+
+(defn q->html
+  "Converts question into HTML representation"
+  [q]
+  [:tr   [:td  [:input {:type "checkbox" :name (q-id->html (:id q))} ]]
+   [:td  [:a {:href "#"} (:id q)]]
+   [:td  (:title q)]
+   [:td  (:question q)]
+   [:td [:a {:href "#" :title "Find where else this question has been used"} "Usage"]]
+   ])
+
 (defpartial list-of-questions-and-answers []
   [:section#list-of-questions-and-answers
    [:div.page-header
@@ -26,13 +41,7 @@
        [:th "Used In"]]]
      [:tbody
       (for [q  (question/find-records ["1=1"])]
-        [:tr {}
-         [:td  [:input {:type "checkbox" :name (str "question-" (:id q))} ]]
-         [:td  [:a {:href "#"} (:id q)]]
-         [:td  (:title q)]
-         [:td  (:question q)]
-         [:td [:a {:href "#" :title "Find where else this question has been used"} "Usage"]]
-         ])
+        (q->html q))
       ]
      ]
     [:button.btn.btn-success "Add More"]]
