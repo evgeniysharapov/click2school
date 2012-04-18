@@ -52,3 +52,7 @@
   :questions
   (list-of-questions-and-answers))
 
+(defview questions-create "/questions/create" []
+  :questions
+  [:section#create-new-questions
+   [:div.page-header [:h1 "Create New Question"]]])
