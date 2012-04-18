@@ -78,17 +78,19 @@
   (on-form-control "checkbox" name label))
 
 (defpartial checkbox-group
-  [name label]
+  [name label & val-label-map]
   (on-form-control "checkbox" name label))
-
-(defpartial radio
-  [name label]
-  (on-form-control "radio" name label))
 
 (defpartial radio-group
   [name & val-label-map]
-  (for [[val lable] (apply hash-map val-label-map)]
+  (for [[val label] (apply hash-map val-label-map)]
     (on-form-control "radio" name label val)))
+
+(defpartial radio-group-inline
+  [name & val-label-map]
+  (for [[val label] (apply hash-map val-label-map)]
+    (on-form-control "radio" name label val)))
+
 
 (defpartial question-edit-form [new-or-edit-title]
   [:section#list-of-questions-and-answers
@@ -103,11 +105,13 @@
      [:dt " Checkbox"]
      [:dd "This question makes people to check the box in response. Example, \"I agree with terms and conditions\"."]
      [:dt "Multiple Choice"]
-     [:dd "This questions are akin to " [:i "Choice"] " questions, but they let respondent to choose several answers."]]
-    [:form
-     [:fieldset
-      ]]
-    ]])
+     [:dd "This questions are akin to " [:i "Choice"] " questions, but they let respondent to choose several answers."]]]
+
+   [:form
+    (text-area "question" "Question")
+    (radio-group "type" "CHOICE" "Choice" "BOOLEAN" "Checkbox" "TEXT" "Free form typing" "MULTIPLE" "Multiple choice")
+    ]
+    ])
 
 (defview questions-create "/questions/create" []
   :questions
