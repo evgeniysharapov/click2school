@@ -43,8 +43,8 @@
       (for [q  (question/find-records ["1=1"])]
         (q->html q))
       ]
-     ]
-    [:button.btn.btn-success "Add More"]]
+     ]]
+   [:button.btn.btn-success {:onclick "location.href='/questions/create'"} "Add More"]
    ])
 
 
