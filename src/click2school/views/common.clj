@@ -18,7 +18,8 @@
      [:link {:href "/bootstrap/css/bootstrap.css", :rel "stylesheet"}]
      [:style {} "body { padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */}"]
      [:link {:href "/bootstrap/css/bootstrap-responsive.css", :rel "stylesheet"}]
-   [:link {:href "/css/site.css", :rel "stylesheet"}]
+   (include-css "/css/site.css") 
+   (include-css "/css/font-awesome.css")
    (comment
      [:link {:rel "shortcut icon", :href "images/favicon.ico"}]
      [:link {:rel "apple-touch-icon", :href "images/apple-touch-icon.png"}]
