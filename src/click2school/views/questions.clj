@@ -1,6 +1,7 @@
 (ns click2school.views.questions
   (:require (click2school.models [question :as question]))
   (:use [noir.core :only (defpage defpartial)]
+        [hiccup.page-helpers :only [javascript-tag]]
         [click2school.views.common :only [defview]]))
 
 
@@ -60,7 +61,7 @@
      [:label.control-label {:for ctrl-id} label]
      [:div.controls
       [(keyword (str (if (= type-name "textarea") type-name "input") ".input-xlarge"))
-       (merge  {:id ctrl-id :type type-name :name name}
+       (merge  {:id ctrl-id :type type-name :name name :style "width: 400px"}
                (when value {:value value})
                (when placeholder {:placeholder placeholder}))]
       ]]))
@@ -81,15 +82,38 @@
   [name label & val-label-map]
   (on-form-control "checkbox" name label))
 
+(defpartial radio
+  [name label]
+  (on-form-control "radio" name label))
+
 (defpartial radio-group
   [name & val-label-map]
   (for [[val label] (apply hash-map val-label-map)]
     (on-form-control "radio" name label val)))
 
+;;; "Produces a group of radio buttons in one line."
 (defpartial radio-group-inline
   [name & val-label-map]
-  (for [[val label] (apply hash-map val-label-map)]
-    (on-form-control "radio" name label val)))
+  [:div.control-group
+   [:div.controls
+    (for [[val label] (apply hash-map val-label-map)]
+      (let [ctrl-id (gensym name)]
+        [:label.radio.inline {:for ctrl-id} label
+         [:input {:id ctrl-id :type "radio" :name name :value val}]]))
+    ]])
+
+(defpartial question-answer-option
+  [name type]
+  (let [ctrl-id (gensym name)
+        ctrl-id-correct (str ctrl-id "-correct")]
+    [:div.control-group.answer-option
+     [:div.controls
+      [:div.input-append
+       [:input {:id ctrl-id :type "text" :name name :placeholder "Type an answer"}]
+       [:label {:id (str ctrl-id-correct "-label")  :for ctrl-id-correct :class (str  type " inline")}  "Correct"
+        [:input {:id ctrl-id-correct :type type :name "correct" :value name} ]]
+       [:a.btn.remove-q [:i {:class "icon-minus-sign"}] "Remove" ]
+       ]]]))
 
 
 (defpartial question-edit-form [new-or-edit-title]
@@ -109,9 +133,60 @@
 
    [:form
     (text-area "question" "Question")
-    (radio-group "type" "CHOICE" "Choice" "BOOLEAN" "Checkbox" "TEXT" "Free form typing" "MULTIPLE" "Multiple choice")
-    ]
-    ])
+    (radio-group-inline "type" "CHOICE" "Choice" "BOOLEAN" "Checkbox" "TEXT" "Free form typing" "MULTIPLE" "Multiple choice")
+    (javascript-tag
+     "
+     function showCheckedQTypePanel () {
+        $('input[name=type]:not(:checked)').each(function(){$('#'+$(this).val()).hide();});
+        $('#'+$('input[name=type]:checked').val()).show();
+     }
+     $('input[name=type]').click(showCheckedQTypePanel);
+     $(document).ready(function(){$('.q-answers').each(function(){$(this).hide();});$('input[name=type]:first').click();});"
+     )
+
+    ;; add elements that are going to be varying on the form.
+
+    [:div#CHOICE {:class "q-answers"}
+     (question-answer-option "answer-1", "radio")
+     ;; add + button and checkbox to mark correct answer
+     ]
+    [:div#BOOLEAN  {:class "q-answers"}
+     [:p "Respondent would be presented with a check box when he or she will be answering this question."]
+     ]
+    [:div#TEXT  {:class "q-answers"}
+     [:p "Respondent would be presented with a text typing area when he or she will be answering this question."]
+     ]
+    [:div#MULTIPLE  {:class "q-answers"}
+     (question-answer-option "answer-1" "checkbox")
+     ]
+    [:div.controls
+     [:div.control-group
+      [:a#add-answer {:class "btn"} [:i {:class "icon-plus-sign"}] "Add"]]
+     (javascript-tag
+      "$('#add-answer').click(function(){
+          var e =  $('div.q-answers:visible div.answer-option:last').clone(true);
+          /*change input field name*/
+          var inp = e.find('input[name!=correct]');
+          var ix = inp.attr('name').match(/.+-(\\d+)/);
+          inp.attr('name', 'answer-'+(parseInt(ix[1])+1));
+          inp.attr('id', 'answer-'+(parseInt(inp.attr('id').match(/[^\\d]+(\\d+)/)[1])+1));
+          /* change names of the correct box and label's for attr */
+          var corr = e.find('input[name=correct]');
+          var m = corr.attr('id').match(/([^\\d]+)(\\d+)([^\\d]+)/);
+          var newId = m[1]+(parseInt(m[2])+1)+m[3];
+          corr.attr('id',newId);
+          corr.parent('label').attr('for',newId);
+          /* add new control to the end */
+          $('div.q-answers:visible div.answer-option:last').after(e);
+})")
+     ]
+    (javascript-tag
+     "$('a.remove-q').each(function(){$(this).live('click', function(){
+         if($('div.q-answers:visible div.answer-option').size() > 1 ) {
+             $(this).parents('div.answer-option').remove();
+         } 
+});});")
+    ]])
 
 (defview questions-create "/questions/create" []
   :questions
