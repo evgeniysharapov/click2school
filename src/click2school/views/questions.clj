@@ -1,6 +1,9 @@
 (ns click2school.views.questions
-  (:require (click2school.models [question :as question]))
-  (:use [noir.core :only (defpage defpartial)]
+  (:require (click2school.models [question :as question]
+                                 [answer_option :as answer])
+            [noir.response :as resp]
+            [noir.request :as req])
+  (:use [noir.core :only (defpage defpartial url-for)]
         [hiccup.page-helpers :only [javascript-tag]]
         [click2school.views.common :only [defview]]))
 
@@ -131,7 +134,8 @@
      [:dt "Multiple Choice"]
      [:dd "This questions are akin to " [:i "Choice"] " questions, but they let respondent to choose several answers."]]]
 
-   [:form
+   [:form {:method "POST" :action "/questions/save"}
+    (text "title" "Question Title")
     (text-area "question" "Question")
     (radio-group-inline "type" "CHOICE" "Choice" "BOOLEAN" "Checkbox" "TEXT" "Free form typing" "MULTIPLE" "Multiple choice")
     (javascript-tag
@@ -148,8 +152,11 @@
 
     [:div#CHOICE {:class "q-answers"}
      (question-answer-option "answer-1", "radio")
-     ;; add + button and checkbox to mark correct answer
-     ]
+     [:div.controls
+      [:div.control-group
+       [:a.add-answer.btn  [:i {:class "icon-plus-sign"}] "Add"]]
+
+      ]]
     [:div#BOOLEAN  {:class "q-answers"}
      [:p "Respondent would be presented with a check box when he or she will be answering this question."]
      ]
@@ -158,36 +165,62 @@
      ]
     [:div#MULTIPLE  {:class "q-answers"}
      (question-answer-option "answer-1" "checkbox")
-     ]
-    [:div.controls
-     [:div.control-group
-      [:a#add-answer {:class "btn"} [:i {:class "icon-plus-sign"}] "Add"]]
-     (javascript-tag
-      "$('#add-answer').click(function(){
+     [:div.controls
+      [:div.control-group
+       [:a.add-answer.btn  [:i {:class "icon-plus-sign"}] "Add"]]
+      ]]
+      (javascript-tag
+       "$('a.add-answer').click(function(){
           var e =  $('div.q-answers:visible div.answer-option:last').clone(true);
           /*change input field name*/
           var inp = e.find('input[name!=correct]');
           var ix = inp.attr('name').match(/.+-(\\d+)/);
-          inp.attr('name', 'answer-'+(parseInt(ix[1])+1));
+          var newName = 'answer-'+(parseInt(ix[1])+1);
+          inp.attr('name', newName);
           inp.attr('id', 'answer-'+(parseInt(inp.attr('id').match(/[^\\d]+(\\d+)/)[1])+1));
           /* change names of the correct box and label's for attr */
           var corr = e.find('input[name=correct]');
           var m = corr.attr('id').match(/([^\\d]+)(\\d+)([^\\d]+)/);
           var newId = m[1]+(parseInt(m[2])+1)+m[3];
           corr.attr('id',newId);
+          corr.attr('value',newName);
           corr.parent('label').attr('for',newId);
           /* add new control to the end */
           $('div.q-answers:visible div.answer-option:last').after(e);
 })")
-     ]
     (javascript-tag
      "$('a.remove-q').each(function(){$(this).live('click', function(){
          if($('div.q-answers:visible div.answer-option').size() > 1 ) {
              $(this).parents('div.answer-option').remove();
          } 
 });});")
+    [:div.form-actions
+     [:button.btn.btn-primary {:id "submit_question"  :type "submit"} "Save"]
+     [:button.btn {:type "submit" :name "cancel"} "Cancel"]
+     (javascript-tag
+      "$('#submit_question').click(function(){
+          $('form  input:hidden').attr('disabled',true);
+          $('form').submit();
+});")
+     ]
     ]])
 
-(defview questions-create "/questions/create" []
+(defview questions-create [:get  "/questions/create"] []
   :questions
   (question-edit-form "Create New Question"))
+
+;;; TODO: add bunch of validations
+(defpage questions-save [:post "/questions/save"] { :keys [title type question cancel] :as q}
+  (if (nil? cancel)
+    (let [ring-req (req/ring-request)
+          correct  (case type
+                     "MULTIPLE" (set (:correct (:form-params ring-req)))
+                     "CHOICE"  #{(:correct q)})]
+      ;; first we are creating or updating question
+      (let [id  (question/create {:title title :qtype type :question question})]
+        (when (not-empty correct)
+          ;; now we save answers for this question
+          (doseq [ans (filter #(re-matches #"answer-\d+" (name  %)) (keys q))]
+            (answer/create {:question_id id :correct (contains? correct ans) :t_answer (ans q)}))
+          ))
+      (resp/redirect (url-for questions-page)))))
