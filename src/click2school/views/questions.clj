@@ -215,9 +215,9 @@
     (let [ring-req (req/ring-request)
           correct  (case type
                      "MULTIPLE" (set (:correct (:form-params ring-req)))
-                     "CHOICE"  #{(:correct q)})]
+                     "CHOICE"  #{(keyword  (:correct q))})]
       ;; first we are creating or updating question
-      (let [id  (question/create {:title title :qtype type :question question})]
+      (let [id  (:id  (question/create {:title title :qtype type :question question}))]
         (when (not-empty correct)
           ;; now we save answers for this question
           (doseq [ans (filter #(re-matches #"answer-\d+" (name  %)) (keys q))]
