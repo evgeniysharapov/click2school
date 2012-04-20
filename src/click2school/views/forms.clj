@@ -100,9 +100,7 @@
     [:div.control-group
      [:label.control-label {:for "form-description"} "Form Description"]
      [:div.controls
-      [:textarea.input-xlarge {:id "form-description" :name "description"}]
-      ]
-     ]
+      [:textarea.input-xlarge {:id "form-description" :name "description"}]]]
 
   ;;; for questions in the form
     (for [fq (formq/find-records {:form_id id})]
