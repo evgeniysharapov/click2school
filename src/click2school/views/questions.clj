@@ -5,7 +5,7 @@
             [noir.request :as req])
   (:use [noir.core :only (defpage defpartial url-for)]
         [hiccup.page-helpers :only [javascript-tag]]
-        [click2school.views.common :only [defview]]))
+        [click2school.views.common :only [defview text text-area checkbox checkbox-group radio radio-group radio-group-inline ]]))
 
 
 (defn q-id->html
@@ -56,54 +56,6 @@
   :questions
   (list-of-questions-and-answers))
 
-(defpartial on-form-control
-  [type name label & [value placeholder]]
-  (let [ctrl-id (gensym name)
-        type-name (clojure.core/name type)]
-    [:div.control-group
-     [:label.control-label {:for ctrl-id} label]
-     [:div.controls
-      [(keyword (str (if (= type-name "textarea") type-name "input") ".input-xlarge"))
-       (merge  {:id ctrl-id :type type-name :name name :style "width: 400px"}
-               (when value {:value value})
-               (when placeholder {:placeholder placeholder}))]
-      ]]))
-
-(defpartial text
-  [name label]
-  (on-form-control "text" name label))
-
-(defpartial text-area
-  [name label]
-  (on-form-control "textarea" name label))
-
-(defpartial checkbox
-  [name label]
-  (on-form-control "checkbox" name label))
-
-(defpartial checkbox-group
-  [name label & val-label-map]
-  (on-form-control "checkbox" name label))
-
-(defpartial radio
-  [name label]
-  (on-form-control "radio" name label))
-
-(defpartial radio-group
-  [name & val-label-map]
-  (for [[val label] (apply hash-map val-label-map)]
-    (on-form-control "radio" name label val)))
-
-;;; "Produces a group of radio buttons in one line."
-(defpartial radio-group-inline
-  [name & val-label-map]
-  [:div.control-group
-   [:div.controls
-    (for [[val label] (apply hash-map val-label-map)]
-      (let [ctrl-id (gensym name)]
-        [:label.radio.inline {:for ctrl-id} label
-         [:input {:id ctrl-id :type "radio" :name name :value val}]]))
-    ]])
 
 (defpartial question-answer-option
   [name type]
