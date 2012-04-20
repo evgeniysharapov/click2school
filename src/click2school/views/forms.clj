@@ -107,7 +107,7 @@
   ;;; for questions in the form
     (for [fq (formq/find-records {:form_id id})]
       (render-form-question (question/get-record (:question_id fq))))
-    [:div.form-action
+    [:div.form-actions
      [:button.btn.btn-primary {:type "submit"} "Save"]
      [:button.btn  "Cancel"]]
     ]])
