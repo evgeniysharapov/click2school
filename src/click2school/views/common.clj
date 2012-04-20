@@ -171,8 +171,8 @@ This is a macro you want to use to define pages."
       ]]))
 
 (defpartial text
-  [name label]
-  (on-form-control "text" name label))
+  [name label & [value placeholder]]
+  (on-form-control "text" name label value placeholder))
 
 (defpartial text-area
   [name label]
