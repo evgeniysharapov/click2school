@@ -11,7 +11,8 @@
             [noir.response :as resp])
   (:use [noir.core :only (defpage defpartial url-for)]
         [noir.request :only (ring-request)] 
-        [hiccup.core :only (escape-html)]))
+        [hiccup.core :only (escape-html)]
+        [click2school.views.common :only (defview)]))
 
 
 (defpartial  list-of-forms []
@@ -74,20 +75,14 @@
   (for [fq (formq/find-records {:form_id id})]
     (render-form-question (question/get-record (:question_id fq)))))
 
+(defview forms-route "/forms" []
+  :forms
+  (list-of-forms))
 
-(defpage forms-route "/forms" []
-  (common/layout-with-navbar-and-sidebar
-    (common/default-navbar (sess/get :username ))
-    (sidebar/sidebar
-     (sidebar/activate-item sidebar/*default-sidebar* :forms))
-    (list-of-forms)))
+(defview forms-view [:get ["/forms/:id" :id #"\d+"]] {:keys [id]}
+  :forms
+  (render-form (form/get-record (Integer/parseInt id))))
 
-(defpage forms-view [:get ["/forms/:id" :id #"\d+"]] {:keys [id]}
-  (common/layout-with-navbar-and-sidebar
-    (common/default-navbar (sess/get :username ))
-    (sidebar/sidebar
-     (sidebar/activate-item sidebar/*default-sidebar* :forms))
-    (render-form (form/get-record (Integer/parseInt id)))))
 
 (defpartial render-form-edit [{:keys [id title description composer_user_id]}]
   [:h2 "Edit Form" ]
@@ -117,12 +112,9 @@
      [:button.btn  "Cancel"]]
     ]])
 
-(defpage forms-edit [:get ["/forms/:id/edit" :id #"\d+"]] {:keys [id]}
-  (common/layout-with-navbar-and-sidebar
-    (common/default-navbar (sess/get :username ))
-    (sidebar/sidebar
-     (sidebar/activate-item sidebar/*default-sidebar* :forms))
-    (render-form-edit (form/get-record (Integer/parseInt id)))))
+(defview forms-edit [:get ["/forms/:id/edit" :id #"\d+"]] {:keys [id]}
+  :forms
+  (render-form-edit (form/get-record (Integer/parseInt id))))
 
 (defpage forms-create [:post "/form/create"] {:as questions}
   (let [f (form/create {:title "" :description "" :composer_user_id (:id  (common/me))})
