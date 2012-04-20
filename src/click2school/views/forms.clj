@@ -12,7 +12,7 @@
   (:use [noir.core :only (defpage defpartial url-for)]
         [noir.request :only (ring-request)] 
         [hiccup.core :only (escape-html)]
-        [click2school.views.common :only (defview)]))
+        [click2school.views.common :only (defview text text-area)]))
 
 
 (defpartial  list-of-forms []
@@ -91,16 +91,8 @@
    [:fieldset
     [:input {:type "hidden" :name "id" :value id}]
     [:input {:type "hidden" :name "composer_user_id" :value composer_user_id}]
-    [:div.control-group
-     [:label.control-label {:for "form-title"} "Form Title"]
-     [:div.controls
-      [:input.input-xlarge {:id "form-title" :type "text" :name "title"}]
-      ]
-     ]
-    [:div.control-group
-     [:label.control-label {:for "form-description"} "Form Description"]
-     [:div.controls
-      [:textarea.input-xlarge {:id "form-description" :name "description"}]]]
+    (text "title" "Form Title" title)
+    (text-area "description" "Form Description" description)
 
   ;;; for questions in the form
     (for [fq (formq/find-records {:form_id id})]
