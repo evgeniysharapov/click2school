@@ -110,8 +110,12 @@
     (resp/redirect (url-for forms-edit {:id (:id f)}))
     ))
 
-(defpage forms-update [:post "/forms/update"] {:keys [id title description composer_user_id] :as frm}
-  (form/update {:id (Integer/parseInt id) :title title :description description :composer_user_id (Integer/parseInt composer_user_id)})
+(defpage forms-update [:post "/forms/update"] {:keys [id title description composer_user_id cancel] :as frm}
+  (when (nil? cancel)
+    (form/update {:id (Integer/parseInt id)
+                  :title title
+                  :description description
+                  :composer_user_id (Integer/parseInt composer_user_id)}))
   (resp/redirect (url-for forms-view {:id id}))
   )
 
