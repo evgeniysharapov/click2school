@@ -210,3 +210,13 @@ This is a macro you want to use to define pages."
 (defpartial hidden
   [name value]
   [:input {:type "hidden" :name name :value value}])
+
+(defpartial form-save-cancel
+  [url & more]
+  [:form.form-horizontal {:method "POST" :action url}
+   [:fieldset
+    more
+    [:div.form-actions
+     [:button.btn.btn-primary {:type "submit"} "Save"]
+     [:button.btn  {:type "submit" :name "cancel"}  "Cancel"]]
+    ]])

@@ -12,7 +12,7 @@
   (:use [noir.core :only (defpage defpartial url-for)]
         [noir.request :only (ring-request)] 
         [hiccup.core :only (escape-html)]
-        [click2school.views.common :only (defview text text-area hidden)]))
+        [click2school.views.common :only (defview text text-area hidden form-save-cancel)]))
 
 
 (defpartial  list-of-forms []
@@ -87,20 +87,14 @@
 (defpartial render-form-edit [{:keys [id title description composer_user_id]}]
   [:h2 "Edit Form" ]
   [:p "Enter description and title of the form. Add more question using plus button."]
-  [:form.form-horizontal {:method "POST" :action "/forms/update"}
-   [:fieldset
-    (hidden "id" id)
-    (hidden "composer_user_id" composer_user_id)
-    (text "title" "Form Title" title)
-    (text-area "description" "Form Description" description)
-
-  ;;; for questions in the form
-    (for [fq (formq/find-records {:form_id id})]
-      (render-form-question (question/get-record (:question_id fq))))
-    [:div.form-actions
-     [:button.btn.btn-primary {:type "submit"} "Save"]
-     [:button.btn  "Cancel"]]
-    ]])
+  (form-save-cancel "/forms/update"
+                    (hidden "id" id)
+                    (hidden "composer_user_id" composer_user_id)
+                    (text "title" "Form Title" title)
+                    (text-area "description" "Form Description" description)
+                    ;;; for questions in the form
+                    (for [fq (formq/find-records {:form_id id})]
+                      (render-form-question (question/get-record (:question_id fq))))))
 
 (defview forms-edit [:get ["/forms/:id/edit" :id #"\d+"]] {:keys [id]}
   :forms
