@@ -13,3 +13,47 @@
 p.signup {
     text-align: right;
 }
+
+.btn:first-child {
+    margin-left: 0;
+}
+
+button.btn, input.btn[type="submit"] {
+    margin-left: 10px;
+}
+
+/* Radios and checkboxes on same line */
+.radio.inline,
+.checkbox.inline {
+  display: inline-block;
+}
+.radio.inline + .radio.inline,
+.checkbox.inline + .checkbox.inline {
+  margin-left: 10px;
+}
+
+/*questions panel*/
+.q-answers .input-append {
+    display: inline-block;
+    margin-bottom: 0;
+}
+.q-answers input {
+    display: inline-block;
+    margin-bottom: 0;
+}
+.q-answers .radio,
+.q-answers .checkbox {
+    margin-bottom: 0;
+    padding-left: 0;
+    vertical-align: middle;
+}
+.q-answers .radio input[type="radio"], 
+.q-answers .checkbox input[type="checkbox"] {
+    float: left;
+    margin-left: 20px;
+    margin-right: 3px;
+}
+
+.q-answers .remove-q {
+    margin-left: 30px;
+}

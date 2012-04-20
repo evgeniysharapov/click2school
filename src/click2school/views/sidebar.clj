@@ -36,10 +36,11 @@
      [:a {:shape "rect", :href url}
       [:i {:class (when icon (icon BOOTSTRAP-ICONS))}] title]]))
 
-(defn- section [title]
-  [:li.nav-header title])
+(defpartial section [title & items]
+  [:li.nav-header title]
+  items)
 
-(defn- sidebar-main [ & items ]
+(defpartial sidebar-main [ & items ]
   [:ul.nav.nav-list
    items
    ])
@@ -49,9 +50,8 @@
   [bar]
   (sidebar-main
    (for [sec bar]
-       (do
-        (section (first sec))
-        (map #(apply item (rest %)) (rest  sec))))))
+     (section (first sec)
+              (map #(apply item (rest %)) (rest  sec))))))
 
 (defn- find-section-by-item-key
   "Returns a sidebar item by its key"

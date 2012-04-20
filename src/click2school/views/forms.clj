@@ -93,7 +93,7 @@
   [:h2 "Edit Form" ]
   [:p "Enter description and title of the form. Add more question using plus button."]
   [:form.form-horizontal {:method "POST" :action "/forms/update"}
-   [:fielset
+   [:fieldset
     [:input {:type "hidden" :name "id" :value id}]
     [:input {:type "hidden" :name "composer_user_id" :value composer_user_id}]
     [:div.control-group
@@ -108,7 +108,7 @@
       [:textarea.input-xlarge {:id "form-description" :name "description"}]
       ]
      ]
-    
+
   ;;; for questions in the form
     (for [fq (formq/find-records {:form_id id})]
       (render-form-question (question/get-record (:question_id fq))))
@@ -134,8 +134,8 @@
     (resp/redirect (url-for forms-edit {:id (:id f)}))
     ))
 
-(defpage forms-update [:post "/forms/update"] {:keys [id title desription composer_user_id] :as frm}
-  (form/update frm)
+(defpage forms-update [:post "/forms/update"] {:keys [id title description composer_user_id] :as frm}
+  (form/update {:id (Integer/parseInt id) :title title :description description :composer_user_id (Integer/parseInt composer_user_id)})
   (resp/redirect (url-for forms-view {:id id}))
   )
 

@@ -1,10 +1,11 @@
 (ns click2school.views.common
   (:require [click2school.utils :as utils]
+            [click2school.views.sidebar :as sidebar]
             [click2school.models.user :as u]
             [click2school.models.message :as m]
             [noir.session :as sess]
             [clojure.string :as s])
-  (:use [noir.core :only [defpartial]]
+  (:use [noir.core :only [defpartial defpage]]
         [hiccup.page-helpers]
         [click2school.views.icon]))
 
@@ -144,3 +145,14 @@
     navbar
     (sidebar-content sidebar content)))
 
+(defmacro defview
+  "Helper macro that calls a defpage macro with some predefined stuff. Last two arguments are key of the active sidebar and a main area content.
+This is a macro you want to use to define pages."
+  [& args ]
+  (let [[main-content k-sb] (take 2 (reverse args))]
+    `(defpage ~@(drop-last 2 args)
+       (layout-with-navbar-and-sidebar
+         (default-navbar (sess/get :username ))
+         (sidebar/sidebar
+          (sidebar/activate-item sidebar/*default-sidebar* ~k-sb))
+         ~main-content))))
