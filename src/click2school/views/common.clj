@@ -206,3 +206,7 @@ This is a macro you want to use to define pages."
         [:label.radio.inline {:for ctrl-id} label
          [:input {:id ctrl-id :type "radio" :name name :value val}]]))
     ]])
+
+(defpartial hidden
+  [name value]
+  [:input {:type "hidden" :name name :value value}])
