@@ -166,8 +166,9 @@ This is a macro you want to use to define pages."
      [:div.controls
       [(keyword (str (if (= type-name "textarea") type-name "input") ".input-xlarge"))
        (merge  {:id ctrl-id :type type-name :name name :style "width: 400px"}
-               (when value {:value value})
-               (when placeholder {:placeholder placeholder}))]
+               (when (and (not= type-name "textarea") value) {:value value})
+               (when placeholder {:placeholder placeholder}))
+       (when (= type-name "textarea") value)]
       ]]))
 
 (defpartial text
@@ -175,8 +176,8 @@ This is a macro you want to use to define pages."
   (on-form-control "text" name label value placeholder))
 
 (defpartial text-area
-  [name label]
-  (on-form-control "textarea" name label))
+  [name label & [value placeholder]]
+  (on-form-control "textarea" name label value placeholder))
 
 (defpartial checkbox
   [name label]
