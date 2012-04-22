@@ -40,6 +40,7 @@
   "Returns user from the session"
   (u/find-person (u/get-record (sess/get :user-id))))
 
+
 (defpartial navbar-item [url title & rest ]
   (let [params (filter #(keyword?  %) rest)
         params1 (map #(name %) params)
@@ -50,12 +51,15 @@
 (defpartial navbar-login-item [url]
   [:ul.nav.pull-right
    [:li
-    [:a {:shape "rect", :href url} "Login"]]])
+    [:a {:href url} "Login"]]])
 
 (defpartial navbar-logout-item [url username]
   [:ul.nav.pull-right
    [:li
-    [:a {:shape "rect", :href url} (str "Logged in as " username ". ") "Logout?"]]])
+    [:div.logout-item
+     "Logged in as "
+     [:a {:href (str "/user/" (:id (me)))} (:name (first (person/find-user (me))))]
+     [:a {:href url} "Logout?"]]]])
 
 (defn navbar [log-in-out  & contents]
   [:div.navbar.navbar-fixed-top
