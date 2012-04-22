@@ -104,7 +104,7 @@
   (let [f (form/create {:title "" :description "" :composer_user_id (:id  (common/me))})
         question-ids (map #(Integer/parseInt %) (flatten (map #(re-seq #"\d+" %) (map name (keys questions)))))]
     ;; add questions to the form question
-    (for [i question-ids]
+    (doseq [i question-ids]
       (formq/create {:form_id (:id f) :question_id i}))
     ;; post a form in a base
     (resp/redirect (url-for forms-edit {:id (:id f)}))
