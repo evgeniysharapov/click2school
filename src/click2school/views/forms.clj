@@ -12,7 +12,8 @@
   (:use [noir.core :only (defpage defpartial url-for)]
         [noir.request :only (ring-request)] 
         [hiccup.core :only (escape-html)]
-        [click2school.views.common :only (defview text text-area hidden form-save-cancel)]))
+        [click2school.views.common :only (defview text text-area hidden form-save-cancel)]
+        [click2school.views.questions :only (render)]))
 
 
 (defpartial  list-of-forms []
@@ -21,7 +22,7 @@
     [:h1 " Forms "
      [:small "sent, pending and templates"]]]
 
-   [:h2 "Forms sent"]
+   [:h2 "All Forms"]
    [:table.table.table-bordered.table-striped {:id "forms-list"}
     [:thead
      [:tr
@@ -44,36 +45,13 @@
     ]
    ])
 
-;;; Renders form question
-(defpartial render-form-question [{:keys [id title question qtype] :as q}]
-  (let [question-id (str "question-" id)]
-    [:div.control-group.question-on-form
-     [:h3 title]
-     [:p (escape-html question)]
-     [:p
-      (case qtype
-        "CHOICE"  (for [ans (answer/find-records {:question_id id})]
-                    (let [{:keys [id correct t_answer]} ans
-                          answer-id (str "answer-" id)]
-                      [:label.checkbox {:for answer-id}
-                       [:input {:type "checkbox" :id answer-id :name answer-id}]
-                       t_answer]))
-        "BOOLEAN" [:input {:type "checkbox" }]
-        "TEXT" [:textarea.input-xlarge {:name question-id}]
-        "MULTIPLE" (for [ans (answer/find-records {:question_id id})]
-                     (let [{:keys [id correct t_answer]} ans
-                           answer-id (str "answer-" id)]
-                       [:label.radio {:for answer-id}
-                        [:input {:type "radio" :id answer-id :name question-id :value answer-id}]
-                        t_answer]))
-        )]]))
 
 (defpartial render-form [{:keys [id title description composer_user_id]}]
   [:h2 title ]
   [:p description]
   ;;; for questions in the form
   (for [fq (formq/find-records {:form_id id})]
-    (render-form-question (question/get-record (:question_id fq)))))
+    (render (question/get-record (:question_id fq)))))
 
 (defview forms-route "/forms" []
   :forms
@@ -116,7 +94,9 @@
                   :title title
                   :description description
                   :composer_user_id (Integer/parseInt composer_user_id)}))
-  (resp/redirect (url-for forms-view {:id id})))
+  (if-not (nil? cancel)
+    (resp/redirect (url-for forms-route))
+    (resp/redirect (url-for forms-view {:id id}))))
 
 (defpage forms-send [:post "/forms/:id/send" :id #"\d+"] {:keys [id]})
 

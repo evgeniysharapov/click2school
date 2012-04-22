@@ -4,6 +4,7 @@
             [noir.response :as resp]
             [noir.request :as req])
   (:use [noir.core :only (defpage defpartial url-for)]
+        [hiccup.core :only (escape-html)]
         [hiccup.page-helpers :only [javascript-tag]]
         [click2school.views.common :only [defview text text-area checkbox checkbox-group radio radio-group radio-group-inline ]]))
 
@@ -177,3 +178,28 @@
           (answer/create {:question_id id :correct (contains? correct ans) :t_answer (ans q)}))
         )))
   (resp/redirect (url-for questions-page)))
+
+;;; Renders form question
+(defpartial render [{:keys [id title question qtype] :as q}]
+  (let [question-id (str "question-" id)]
+    [:div.control-group.question-on-form
+     [:h3 title]
+     [:p (escape-html question)]
+     [:p
+      (case qtype
+        "CHOICE"  (for [ans (answer/find-records {:question_id id})]
+                    (let [{:keys [id correct t_answer]} ans
+                          answer-id (str "answer-" id)]
+                      [:label.checkbox {:for answer-id}
+                       [:input {:type "checkbox" :id answer-id :name answer-id}]
+                       t_answer]))
+        "BOOLEAN" [:input {:type "checkbox" }]
+        "TEXT" [:textarea.input-xlarge {:name question-id}]
+        "MULTIPLE" (for [ans (answer/find-records {:question_id id})]
+                     (let [{:keys [id correct t_answer]} ans
+                           answer-id (str "answer-" id)]
+                       [:label.radio {:for answer-id}
+                        [:input {:type "radio" :id answer-id :name question-id :value answer-id}]
+                        t_answer]))
+        )]]))
+
