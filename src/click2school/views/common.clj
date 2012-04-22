@@ -213,7 +213,7 @@ This is a macro you want to use to define pages."
 
 (defpartial form-save-cancel
   [url & more]
-  [:form.form-horizontal {:method "POST" :action url}
+  [:form.form-vertical {:method "POST" :action url}
    [:fieldset
     more
     [:div.form-actions
