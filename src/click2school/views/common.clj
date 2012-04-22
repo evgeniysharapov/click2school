@@ -2,6 +2,7 @@
   (:require [click2school.utils :as utils]
             [click2school.views.sidebar :as sidebar]
             [click2school.models.user :as u]
+            [click2school.models.person :as person]
             [click2school.models.message :as m]
             [noir.session :as sess]
             [clojure.string :as s])
@@ -37,8 +38,7 @@
 
 (defn me []
   "Returns user from the session"
-  (u/get-record
-   (sess/get :user-id)))
+  (u/find-person (u/get-record (sess/get :user-id))))
 
 (defpartial navbar-item [url title & rest ]
   (let [params (filter #(keyword?  %) rest)
@@ -100,8 +100,8 @@
 
 (defn sidebar-content-with-alerts [sidebar alerts & content]
   (let [user (me)
-        user-title (if (= "Male" (:gender user)) "Mr." "Mrs.")
-        user-fullname (str (:first-name user) " " (:last-name user))]
+        user-title (if (:gender user) "Mr." "Mrs.")
+        user-fullname (person/fullname user)]
     [:div {:class "row-fluid"}
      [:div {:class "span12"}
       [:h1 {:id "user_name"} (str user-title " " user-fullname)]
