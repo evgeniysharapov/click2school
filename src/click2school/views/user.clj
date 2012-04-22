@@ -42,6 +42,17 @@
         ;[:button {:type "submit", :class "btn"} "Cancel"]
         ]]]]]])
 
+(defmacro defview-user
+  [name & content ]
+  `(defpartial ~name []
+     [:section {:id "user-info"}
+   [:div {:class "page-header"}
+    [:h1 {} "User Account Information"]]
+   [:h2 {} "User Information"]
+   [:div {:class "row"}
+    [:div {:class "span8"}
+     ~@content
+     ]]]))
 
 (defpartial change-account-info []
   [:section {:id "user-info"}
