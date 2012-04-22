@@ -11,7 +11,9 @@
             [noir.response :as resp])
   (:use [noir.core :only (defpage defpartial url-for)]
         [noir.request :only (ring-request)] 
-        [hiccup.core :only (escape-html)]))
+        [hiccup.core :only (escape-html)]
+        [click2school.views.common :only (defview text text-area hidden form-save-cancel)]
+        [click2school.views.questions :only (render)]))
 
 
 (defpartial  list-of-forms []
@@ -20,7 +22,7 @@
     [:h1 " Forms "
      [:small "sent, pending and templates"]]]
 
-   [:h2 "Forms sent"]
+   [:h2 "All Forms"]
    [:table.table.table-bordered.table-striped {:id "forms-list"}
     [:thead
      [:tr
@@ -43,102 +45,58 @@
     ]
    ])
 
-;;; Renders form question
-(defpartial render-form-question [{:keys [id title question qtype] :as q}]
-  (let [question-id (str "question-" id)]
-    [:div.row
-     [:h3 title]
-     [:p (escape-html question)]
-     [:p
-      (case qtype
-        "CHOICE"  (for [ans (answer/find-records {:question_id id})]
-                    (let [{:keys [id correct t_answer]} ans
-                          answer-id (str "answer-" id)]
-                      [:label.checkbox {:for answer-id}
-                       [:input {:type "checkbox" :id answer-id :name answer-id}]
-                       t_answer]))
-        "BOOLEAN" [:input {:type "checkbox" }]
-        "TEXT" [:textarea.input-xlarge {:name question-id}]
-        "MULTIPLE" (for [ans (answer/find-records {:question_id id})]
-                     (let [{:keys [id correct t_answer]} ans
-                           answer-id (str "answer-" id)]
-                       [:label.radio {:for answer-id}
-                        [:input {:type "radio" :id answer-id :name question-id :value answer-id}]
-                        t_answer]))
-        )]]))
 
 (defpartial render-form [{:keys [id title description composer_user_id]}]
   [:h2 title ]
   [:p description]
   ;;; for questions in the form
   (for [fq (formq/find-records {:form_id id})]
-    (render-form-question (question/get-record (:question_id fq)))))
+    (render (question/get-record (:question_id fq)))))
 
+(defview forms-route "/forms" []
+  :forms
+  (list-of-forms))
 
-(defpage forms-route "/forms" []
-  (common/layout-with-navbar-and-sidebar
-    (common/default-navbar (sess/get :username ))
-    (sidebar/sidebar
-     (sidebar/activate-item sidebar/*default-sidebar* :forms))
-    (list-of-forms)))
+(defview forms-view [:get ["/forms/:id" :id #"\d+"]] {:keys [id]}
+  :forms
+  (render-form (form/get-record (Integer/parseInt id))))
 
-(defpage forms-view [:get ["/forms/:id" :id #"\d+"]] {:keys [id]}
-  (common/layout-with-navbar-and-sidebar
-    (common/default-navbar (sess/get :username ))
-    (sidebar/sidebar
-     (sidebar/activate-item sidebar/*default-sidebar* :forms))
-    (render-form (form/get-record (Integer/parseInt id)))))
 
 (defpartial render-form-edit [{:keys [id title description composer_user_id]}]
   [:h2 "Edit Form" ]
   [:p "Enter description and title of the form. Add more question using plus button."]
-  [:form.form-horizontal {:method "POST" :action "/forms/update"}
-   [:fieldset
-    [:input {:type "hidden" :name "id" :value id}]
-    [:input {:type "hidden" :name "composer_user_id" :value composer_user_id}]
-    [:div.control-group
-     [:label.control-label {:for "form-title"} "Form Title"]
-     [:div.controls
-      [:input.input-xlarge {:id "form-title" :type "text" :name "title"}]
-      ]
-     ]
-    [:div.control-group
-     [:label.control-label {:for "form-description"} "Form Description"]
-     [:div.controls
-      [:textarea.input-xlarge {:id "form-description" :name "description"}]
-      ]
-     ]
+  (form-save-cancel "/forms/update"
+                    (hidden "id" id)
+                    (hidden "composer_user_id" composer_user_id)
+                    (text "title" "Form Title" title)
+                    (text-area "description" "Form Description" description)
+                    ;;; for questions in the form
+                    (for [fq (formq/find-records {:form_id id})]
+                      (render-form-question (question/get-record (:question_id fq))))))
 
-  ;;; for questions in the form
-    (for [fq (formq/find-records {:form_id id})]
-      (render-form-question (question/get-record (:question_id fq))))
-    [:div.form-action
-     [:button.btn.btn-primary {:type "submit"} "Save"]
-     [:button.btn  "Cancel"]]
-    ]])
-
-(defpage forms-edit [:get ["/forms/:id/edit" :id #"\d+"]] {:keys [id]}
-  (common/layout-with-navbar-and-sidebar
-    (common/default-navbar (sess/get :username ))
-    (sidebar/sidebar
-     (sidebar/activate-item sidebar/*default-sidebar* :forms))
-    (render-form-edit (form/get-record (Integer/parseInt id)))))
+(defview forms-edit [:get ["/forms/:id/edit" :id #"\d+"]] {:keys [id]}
+  :forms
+  (render-form-edit (form/get-record (Integer/parseInt id))))
 
 (defpage forms-create [:post "/form/create"] {:as questions}
   (let [f (form/create {:title "" :description "" :composer_user_id (:id  (common/me))})
         question-ids (map #(Integer/parseInt %) (flatten (map #(re-seq #"\d+" %) (map name (keys questions)))))]
     ;; add questions to the form question
-    (for [i question-ids]
+    (doseq [i question-ids]
       (formq/create {:form_id (:id f) :question_id i}))
     ;; post a form in a base
     (resp/redirect (url-for forms-edit {:id (:id f)}))
     ))
 
-(defpage forms-update [:post "/forms/update"] {:keys [id title description composer_user_id] :as frm}
-  (form/update {:id (Integer/parseInt id) :title title :description description :composer_user_id (Integer/parseInt composer_user_id)})
-  (resp/redirect (url-for forms-view {:id id}))
-  )
-
+(defpage forms-update [:post "/forms/update"] {:keys [id title description composer_user_id cancel] :as frm}
+  (when (nil? cancel)
+    (form/update {:id (Integer/parseInt id)
+                  :title title
+                  :description description
+                  :composer_user_id (Integer/parseInt composer_user_id)}))
+  (if-not (nil? cancel)
+    (resp/redirect (url-for forms-route))
+    (resp/redirect (url-for forms-view {:id id}))))
 
 (defpage forms-send [:post "/forms/:id/send" :id #"\d+"] {:keys [id]})
 

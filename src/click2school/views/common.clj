@@ -2,6 +2,7 @@
   (:require [click2school.utils :as utils]
             [click2school.views.sidebar :as sidebar]
             [click2school.models.user :as u]
+            [click2school.models.person :as person]
             [click2school.models.message :as m]
             [noir.session :as sess]
             [clojure.string :as s])
@@ -37,8 +38,8 @@
 
 (defn me []
   "Returns user from the session"
-  (u/get-record
-   (sess/get :user-id)))
+  (u/find-person (u/get-record (sess/get :user-id))))
+
 
 (defpartial navbar-item [url title & rest ]
   (let [params (filter #(keyword?  %) rest)
@@ -50,12 +51,15 @@
 (defpartial navbar-login-item [url]
   [:ul.nav.pull-right
    [:li
-    [:a {:shape "rect", :href url} "Login"]]])
+    [:a {:href url} "Login"]]])
 
 (defpartial navbar-logout-item [url username]
   [:ul.nav.pull-right
    [:li
-    [:a {:shape "rect", :href url} (str "Logged in as " username ". ") "Logout?"]]])
+    [:div.logout-item
+     "Logged in as "
+     [:a {:href (str "/user/" (:id (me)))} (:name (first (person/find-user (me))))]
+     [:a {:href url} "Logout?"]]]])
 
 (defn navbar [log-in-out  & contents]
   [:div.navbar.navbar-fixed-top
@@ -100,8 +104,8 @@
 
 (defn sidebar-content-with-alerts [sidebar alerts & content]
   (let [user (me)
-        user-title (if (= "Male" (:gender user)) "Mr." "Mrs.")
-        user-fullname (str (:first-name user) " " (:last-name user))]
+        user-title (if (:gender user) "Mr." "Mrs.")
+        user-fullname (person/fullname user)]
     [:div {:class "row-fluid"}
      [:div {:class "span12"}
       [:h1 {:id "user_name"} (str user-title " " user-fullname)]
@@ -156,3 +160,67 @@ This is a macro you want to use to define pages."
          (sidebar/sidebar
           (sidebar/activate-item sidebar/*default-sidebar* ~k-sb))
          ~main-content))))
+
+(defpartial on-form-control
+  [type name label & [value placeholder]]
+  (let [ctrl-id (gensym name)
+        type-name (clojure.core/name type)]
+    [:div.control-group
+     [:label.control-label {:for ctrl-id} label]
+     [:div.controls
+      [(keyword (str (if (= type-name "textarea") type-name "input") ".input-xlarge"))
+       (merge  {:id ctrl-id :type type-name :name name :style "width: 400px"}
+               (when (and (not= type-name "textarea") value) {:value value})
+               (when placeholder {:placeholder placeholder}))
+       (when (= type-name "textarea") value)]
+      ]]))
+
+(defpartial text
+  [name label & [value placeholder]]
+  (on-form-control "text" name label value placeholder))
+
+(defpartial text-area
+  [name label & [value placeholder]]
+  (on-form-control "textarea" name label value placeholder))
+
+(defpartial checkbox
+  [name label]
+  (on-form-control "checkbox" name label))
+
+(defpartial checkbox-group
+  [name label & val-label-map]
+  (on-form-control "checkbox" name label))
+
+(defpartial radio
+  [name label]
+  (on-form-control "radio" name label))
+
+(defpartial radio-group
+  [name & val-label-map]
+  (for [[val label] (apply hash-map val-label-map)]
+    (on-form-control "radio" name label val)))
+
+;;; "Produces a group of radio buttons in one line."
+(defpartial radio-group-inline
+  [name & val-label-map]
+  [:div.control-group
+   [:div.controls
+    (for [[val label] (apply hash-map val-label-map)]
+      (let [ctrl-id (gensym name)]
+        [:label.radio.inline {:for ctrl-id} label
+         [:input {:id ctrl-id :type "radio" :name name :value val}]]))
+    ]])
+
+(defpartial hidden
+  [name value]
+  [:input {:type "hidden" :name name :value value}])
+
+(defpartial form-save-cancel
+  [url & more]
+  [:form.form-vertical {:method "POST" :action url}
+   [:fieldset
+    more
+    [:div.form-actions
+     [:button.btn.btn-primary {:type "submit"} "Save"]
+     [:button.btn  {:type "submit" :name "cancel"}  "Cancel"]]
+    ]])

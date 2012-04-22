@@ -139,3 +139,11 @@
                (delete answer_options)
                (defentity questions)
                (delete questions))))
+
+
+(defmigration make-forms-table-title-bigger
+  (up [] (sql/with-connection click2school.config.db/db
+           (sql/do-commands "ALTER TABLE forms ALTER COLUMN title TYPE varchar(100)")))
+  (down [] (sql/with-connection click2school.config.db/db
+             (sql/do-commands "ALTER TABLE forms ALTER COLUMN title TYPE varchar(25)"))))
+

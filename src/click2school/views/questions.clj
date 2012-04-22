@@ -4,8 +4,9 @@
             [noir.response :as resp]
             [noir.request :as req])
   (:use [noir.core :only (defpage defpartial url-for)]
+        [hiccup.core :only (escape-html)]
         [hiccup.page-helpers :only [javascript-tag]]
-        [click2school.views.common :only [defview]]))
+        [click2school.views.common :only [defview text text-area checkbox checkbox-group radio radio-group radio-group-inline ]]))
 
 
 (defn q-id->html
@@ -56,54 +57,6 @@
   :questions
   (list-of-questions-and-answers))
 
-(defpartial on-form-control
-  [type name label & [value placeholder]]
-  (let [ctrl-id (gensym name)
-        type-name (clojure.core/name type)]
-    [:div.control-group
-     [:label.control-label {:for ctrl-id} label]
-     [:div.controls
-      [(keyword (str (if (= type-name "textarea") type-name "input") ".input-xlarge"))
-       (merge  {:id ctrl-id :type type-name :name name :style "width: 400px"}
-               (when value {:value value})
-               (when placeholder {:placeholder placeholder}))]
-      ]]))
-
-(defpartial text
-  [name label]
-  (on-form-control "text" name label))
-
-(defpartial text-area
-  [name label]
-  (on-form-control "textarea" name label))
-
-(defpartial checkbox
-  [name label]
-  (on-form-control "checkbox" name label))
-
-(defpartial checkbox-group
-  [name label & val-label-map]
-  (on-form-control "checkbox" name label))
-
-(defpartial radio
-  [name label]
-  (on-form-control "radio" name label))
-
-(defpartial radio-group
-  [name & val-label-map]
-  (for [[val label] (apply hash-map val-label-map)]
-    (on-form-control "radio" name label val)))
-
-;;; "Produces a group of radio buttons in one line."
-(defpartial radio-group-inline
-  [name & val-label-map]
-  [:div.control-group
-   [:div.controls
-    (for [[val label] (apply hash-map val-label-map)]
-      (let [ctrl-id (gensym name)]
-        [:label.radio.inline {:for ctrl-id} label
-         [:input {:id ctrl-id :type "radio" :name name :value val}]]))
-    ]])
 
 (defpartial question-answer-option
   [name type]
@@ -211,16 +164,42 @@
 
 ;;; TODO: add bunch of validations
 (defpage questions-save [:post "/questions/save"] { :keys [title type question cancel] :as q}
-  (if (nil? cancel)
+  (when (nil? cancel)
     (let [ring-req (req/ring-request)
           correct  (case type
                      "MULTIPLE" (set (:correct (:form-params ring-req)))
-                     "CHOICE"  #{(keyword  (:correct q))})]
+                     "CHOICE"  #{(keyword  (:correct q))}
+                     nil)
+          id  (:id  (question/create {:title title :qtype type :question question}))]
       ;; first we are creating or updating question
-      (let [id  (:id  (question/create {:title title :qtype type :question question}))]
-        (when (not-empty correct)
-          ;; now we save answers for this question
-          (doseq [ans (filter #(re-matches #"answer-\d+" (name  %)) (keys q))]
-            (answer/create {:question_id id :correct (contains? correct ans) :t_answer (ans q)}))
-          ))
-      (resp/redirect (url-for questions-page)))))
+      (when (not-empty correct)
+        ;; now we save answers for this question
+        (doseq [ans (filter #(re-matches #"answer-\d+" (name  %)) (keys q))]
+          (answer/create {:question_id id :correct (contains? correct ans) :t_answer (ans q)}))
+        )))
+  (resp/redirect (url-for questions-page)))
+
+;;; Renders form question
+(defpartial render [{:keys [id title question qtype] :as q}]
+  (let [question-id (str "question-" id)]
+    [:div.control-group.question-on-form
+     [:h3 title]
+     [:p (escape-html question)]
+     [:p
+      (case qtype
+        "CHOICE"  (for [ans (answer/find-records {:question_id id})]
+                    (let [{:keys [id correct t_answer]} ans
+                          answer-id (str "answer-" id)]
+                      [:label.checkbox {:for answer-id}
+                       [:input {:type "checkbox" :id answer-id :name answer-id}]
+                       t_answer]))
+        "BOOLEAN" [:input {:type "checkbox" }]
+        "TEXT" [:textarea.input-xlarge {:name question-id}]
+        "MULTIPLE" (for [ans (answer/find-records {:question_id id})]
+                     (let [{:keys [id correct t_answer]} ans
+                           answer-id (str "answer-" id)]
+                       [:label.radio {:for answer-id}
+                        [:input {:type "radio" :id answer-id :name question-id :value answer-id}]
+                        t_answer]))
+        )]]))
+
