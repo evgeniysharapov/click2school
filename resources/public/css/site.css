@@ -57,3 +57,7 @@ button.btn, input.btn[type="submit"] {
 .q-answers .remove-q {
     margin-left: 30px;
 }
+
+.question-on-form {
+    border-top: solid black 1px;
+}

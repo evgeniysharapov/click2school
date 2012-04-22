@@ -47,7 +47,7 @@
 ;;; Renders form question
 (defpartial render-form-question [{:keys [id title question qtype] :as q}]
   (let [question-id (str "question-" id)]
-    [:div.row
+    [:div.control-group.question-on-form
      [:h3 title]
      [:p (escape-html question)]
      [:p
@@ -116,9 +116,7 @@
                   :title title
                   :description description
                   :composer_user_id (Integer/parseInt composer_user_id)}))
-  (resp/redirect (url-for forms-view {:id id}))
-  )
-
+  (resp/redirect (url-for forms-view {:id id})))
 
 (defpage forms-send [:post "/forms/:id/send" :id #"\d+"] {:keys [id]})
 
