@@ -163,16 +163,17 @@
 
 ;;; TODO: add bunch of validations
 (defpage questions-save [:post "/questions/save"] { :keys [title type question cancel] :as q}
-  (if (nil? cancel)
+  (when (nil? cancel)
     (let [ring-req (req/ring-request)
           correct  (case type
                      "MULTIPLE" (set (:correct (:form-params ring-req)))
-                     "CHOICE"  #{(keyword  (:correct q))})]
+                     "CHOICE"  #{(keyword  (:correct q))}
+                     nil)
+          id  (:id  (question/create {:title title :qtype type :question question}))]
       ;; first we are creating or updating question
-      (let [id  (:id  (question/create {:title title :qtype type :question question}))]
-        (when (not-empty correct)
-          ;; now we save answers for this question
-          (doseq [ans (filter #(re-matches #"answer-\d+" (name  %)) (keys q))]
-            (answer/create {:question_id id :correct (contains? correct ans) :t_answer (ans q)}))
-          ))
-      (resp/redirect (url-for questions-page)))))
+      (when (not-empty correct)
+        ;; now we save answers for this question
+        (doseq [ans (filter #(re-matches #"answer-\d+" (name  %)) (keys q))]
+          (answer/create {:question_id id :correct (contains? correct ans) :t_answer (ans q)}))
+        )))
+  (resp/redirect (url-for questions-page)))
