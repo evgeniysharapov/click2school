@@ -1,7 +1,7 @@
 (ns click2school.views.user
-  (:use [noir.core :only [defpage defpartial render]])
-  (:require [click2school.views.common :as common]
-            (click2school.models [user :as u]
+  (:use [noir.core :only [defpage defpartial render]]
+        [click2school.views.common :only [defview]])
+  (:require (click2school.models [user :as u]
                                  [person :as p])
             [noir.response :as resp]))
 
@@ -102,11 +102,17 @@
           [:p {:class "help-block"} "Purely optional, could be changed later"]]]]]]]]])
 
 
-(defpage "/signup" {:as user}
-  (common/default-layout
-    (new-user user)))
+;(defview )
 
-(defpage [:post "/signup"] {:as user}
+(defpage "/signup" {:as usr}
+  (common/default-layout
+    (change-account-info)))
+
+(defpage [:get "/checkusername"] {:as uname}
+  (when-not (nil? (u/find-record {:name uname}))
+    (json-str {:error "User with this username already exists!"})))
+
+(defpage [:post "/signup"] {:as usr}
   (if true ;(u user)
     ;(do (users/login user))
     (resp/redirect "/messages")
