@@ -72,7 +72,7 @@
                     (text-area "description" "Form Description" description)
                     ;;; for questions in the form
                     (for [fq (formq/find-records {:form_id id})]
-                      (render-form-question (question/get-record (:question_id fq))))))
+                      (render (question/get-record (:question_id fq))))))
 
 (defview forms-edit [:get ["/forms/:id/edit" :id #"\d+"]] {:keys [id]}
   :forms
