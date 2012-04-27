@@ -15,7 +15,6 @@
                            [clj-yaml "0.3.1"]
                            [clj-record "1.1.1"]]
             :dev-dependencies [[clojure-source "1.3.0"]]
-            ;;;:jvm-opts ["-Djava.library.path=C:\\Program Files\\Java\\jre6\\bin"]
             :plugin [[lein-swank "1.4.4"]]
             :main click2school.server)
 
