@@ -43,7 +43,7 @@
         ]]]]]])
 
 (defmacro defview-user
-  [name & content ]
+  [name [params] & content ]
   `(defpartial ~name []
      [:section {:id "user-info"}
    [:div {:class "page-header"}
@@ -53,6 +53,36 @@
     [:div {:class "span8"}
      ~@content
      ]]]))
+
+(defview-user signup []
+  [:form {:enctype "application/x-www-form-urlencoded", :method "get", :class "form-horizontal"}
+   [:fieldset {}
+    [:legend {} "Account Information"]
+    [:div {:class "control-group"}
+     [:label {:for "username", :class "control-label"} "Username"]
+     [:div {:class "controls"}
+      [:input {:type "text", :class "input-xlarge", :id "username"}]
+      [:p {:class "help-block"} "Required. Activation email will be sent to this address\n                      "
+       [:button {:type "", :class "btn btn-mini btn-success"} "Check"]]]]
+    [:div {:class "control-group"}
+     [:label {:for "email", :class "control-label"} "Your Email"]
+     [:div {:class "controls"}
+      [:input {:type "email", :class "input-xlarge", :id "email"}]
+      [:p {:class "help-block"} "Required. Activation email will be sent to this address"]]]
+    [:div {:class "control-group"}
+     [:label {:for "passw", :class "control-label"} "New Password"]
+     [:div {:class "controls"}
+      [:input {:type "password", :class "input-xlarge", :id "passw"}]]]
+    [:div {:class "control-group"}
+     [:label {:for "passw", :class "control-label"} "Confirm Password"]
+     [:div {:class "controls"}
+      [:input {:type "password", :class "input-xlarge", :id "passw"}]
+      [:p {:class "help-block"} "Should be the same as the password."]]]
+    [:div {:class "form-actions"}
+     [:button {:type "submit", :class "btn btn-primary"} "Save changes"]
+     [:button {:type "submit", :class "btn"} "Cancel"]]]]
+  )
+
 
 (defpartial change-account-info []
   [:section {:id "user-info"}
